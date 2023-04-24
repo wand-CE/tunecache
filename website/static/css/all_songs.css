@@ -1,0 +1,171 @@
+ul#musics li {
+  width: 900px;
+  cursor: pointer;
+  background-color: #232327;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+span.autor {
+  margin-left: 50px;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(112, 111, 114);
+}
+
+.modal-content {
+  background-color: #232327;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+}
+
+.close1 {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  top: 5px;
+  right: 15px;
+}
+
+.close1:hover,
+.close1:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#add_musicas:hover {
+  cursor: pointer;
+}
+
+section#controls {
+  background-color: rgb(56, 55, 55);
+  padding: 0.5rem 0;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+section#controls i {
+  font-size: 30px;
+}
+
+section#controls i:hover {
+  cursor: pointer;
+  background-color: #ffffff10;
+  border-radius: 40%;
+}
+
+footer {
+  display: none;
+}
+
+#progressbar {
+  position: absolute;
+  top: 0;
+  margin: 0 10px;
+  -webkit-appearance: none;
+  background-color: #ccc;
+  height: 7px;
+  cursor: pointer;
+}
+
+#progressbar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+#volume {
+  width: 100px;
+  -webkit-appearance: none;
+  background-color: #ccc;
+  height: 7px;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+#volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #fff;
+  cursor: pointer;
+}
+@media (max-width: 900px) {
+  ul#musics li {
+    width: 100%;
+  }
+
+  #controls {
+    height: 70px;
+  }
+
+  #current-duration,
+  #total-duration {
+    font-size: small;
+  }
+  .musica-atual-container {
+    order: -1;
+    top: 5px;
+    left: 10px;
+    position: absolute;
+    width: 97%;
+  }
+
+  #musica_atual {
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .play_prev_next,
+  .volume {
+    position: absolute;
+    bottom: 0;
+  }
+
+  .play_prev_next {
+    left: 10px;
+  }
+
+  .volume {
+    left: 230px;
+  }
+
+  .duration_music {
+    position: absolute;
+    bottom: 12px;
+    left: 90px;
+  }
+}
+@media (min-width: 900px) {
+  .play_prev_next {
+    margin-left: 60px;
+  }
+  .musica-atual-container {
+    width: 100%;
+  }
+}

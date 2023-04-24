@@ -1,0 +1,40 @@
+{% extends 'base.html' %} {% block style_of_page %} {% endblock %} {% block
+title %}TuneCache{% endblock %} {% block content %}
+
+<div class="container">
+  <h1 class="mt-5 d-flex">Minhas Playlists</h1>
+  <button class="btn btn-light my-3">
+    <img
+      src="https://cdn-icons-png.flaticon.com/512/565/565264.png"
+      alt="Ícone de Adicionar Playlist"
+      style="width: 30px"
+    />
+  </button>
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <a href="#">
+        <div class="card bg-dark text-light">
+          <img
+            src="https://via.placeholder.com/350x150"
+            class="card-img-top h-100"
+          />
+          <h5 class="card-title ml-3">Playlist 1</h5>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+<style>
+  .titulo {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    right: 0px;
+    width: 100%;
+    padding: 10px;
+    color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0.452);
+  }
+</style>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+footer {
+  display: none;
+}
+.card {
+  top: 5%;
+  background-color: rgb(196, 192, 192);
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.btn-primary {
+  transition: all 0.4s ease;
+  width: 50%;
+  background-color: #3473b6;
+  font-size: 20px;
+  padding: auto;
+  margin: auto;
+  margin-bottom: 3%;
+}
+
+.btn-primary:hover {
+  cursor: pointer;
+  border-radius: 30px;
+  background-color: #0a2644;
+}
+
+.form-group label {
+  font-weight: bold;
+  font-size: 20px;
+}

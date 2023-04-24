@@ -1,0 +1,148 @@
+{% extends 'base.html' %} {% block style_of_page %}
+<link rel="stylesheet" href="../static/css/all_songs.css" />
+{% endblock %} {% block title %}TuneCache{% endblock %} {% block content %}
+<div class="container-fluid mb-5">
+  <div class="row mb-5">
+    <div class="col mb-5">
+      <h4 align="center" class="mt-4">
+        Todas as Músicas
+        <i
+          onclick="abrirModal()"
+          id="add_musicas"
+          title="Adicionar Músicas"
+          class="bi bi-three-dots-vertical ml-5"
+          style="font-size: 30px"
+        ></i>
+      </h4>
+      <div class="d-flex flex-wrap justify-content-center">
+        <ul class="list-group list-group-flush" id="musics">
+          <li
+            class="d-flex flex-row list-group-item"
+            style="font-size: large; font-weight: bold"
+          >
+            <div style="flex: 3">Título</div>
+            <div style="flex: 1">Cantor</div>
+          </li>
+          {% for audio in user.audios %}
+          <li
+            class="audio_lista{{ audio.id }} d-flex flex-row list-group-item "
+          >
+            <span id="audio_song{{ audio.id }}" style="flex: 3"
+              >{{ audio.name }}</span
+            >
+            <span clas="autor" style="margin-left: 50px; flex: 1"
+              >{{ audio.author }}</span
+            >
+            <audio
+              id="song{{ audio.id }}"
+              class="songs"
+              src="static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
+            ></audio>
+            <button
+              type="button"
+              class="close"
+              style="cursor: pointer"
+              onCLick="deleteAudio({{ audio.id }})"
+            >
+              <span
+                aria-hidden="true"
+                class="bi bi-trash"
+                style="color: white"
+              ></span>
+            </button>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div id="modal" class="modal modal-dialog-centered">
+    <div class="modal-content bg-dark">
+      <span class="close1">&times;</span>
+      <h2>Adicionar Música</h2>
+      <form>
+        <div class="form-group">
+          <label for="titulo">Título:</label>
+          <input
+            type="text"
+            placeholder="Digite o Titulo da Música"
+            class="form-control"
+            id="titulo"
+            name="titulo"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="url">URL:</label>
+          <input
+            type="text"
+            placeholder="Digite a Url da Música"
+            class="form-control"
+            id="url"
+            name="url"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="autor">Autor:</label>
+          <input
+            type="text"
+            placeholder="Nome do cantor"
+            class="form-control"
+            id="autor"
+            name="autor"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Adicionar</button>
+      </form>
+      <!--<form method="POST">
+        <input
+          name="video"
+          id="video"
+          class="form-control"
+          placeholder="Coloque a Url da Música"
+        />
+        <br />
+        <div align="center">
+          <button type="submit" class="btn btn-primary">
+            Adicionar Música
+          </button>
+        </div>
+      </form>-->
+    </div>
+  </div>
+  <section id="controls" class="d-flex flex-row">
+    <div
+      class="play_prev_next d-flex justify-content-start align-items-center flex-grow-1"
+    >
+      <i id="prev-control" class="bi bi-skip-start-fill"></i>
+      <i id="play-control" class="bi bi-play-fill"></i>
+      <i id="next-control" class="bi bi-skip-end-fill"></i>
+    </div>
+    <div
+      class="duration_music d-flex justify-content-end align-items-center mx-3"
+      style="font-size: 12px"
+    >
+      <span id="current-duration" class="mr-1">00:00</span>/
+      <span id="total-duration" class="ml-1">00:00</span>
+    </div>
+    <div class="musica-atual-container">
+      <span id="musica_atual"></span>
+    </div>
+    <div
+      class="volume d-flex justify-content-end align-items-center flex-grow-1 mr-5"
+    >
+      <i id="vol-icon" class="bi bi-volume-up-fill"></i>
+      <input id="volume" type="range" min="0" max="100" step="1" value="100" />
+    </div>
+    <input
+      id="progressbar"
+      type="range"
+      min="0"
+      max="0"
+      step="1"
+      class="w-100 d-md-block"
+    />
+  </section>
+</div>
+{% endblock %}
