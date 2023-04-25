@@ -28,7 +28,7 @@
             class="audio_lista{{ audio.id }} d-flex flex-row list-group-item "
           >
             <span id="audio_song{{ audio.id }}" style="flex: 3"
-              >{{ audio.name }}</span
+              >{{ audio.title }}</span
             >
             <span clas="autor" style="margin-left: 50px; flex: 1"
               >{{ audio.author }}</span
@@ -60,7 +60,7 @@
     <div class="modal-content bg-dark">
       <span class="close1">&times;</span>
       <h2>Adicionar Música</h2>
-      <form>
+      <form method="POST">
         <div class="form-group">
           <label for="titulo">Título:</label>
           <input

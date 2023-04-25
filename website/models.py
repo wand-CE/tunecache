@@ -3,9 +3,10 @@ from . import db
 
 class Audio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150))
+    title = db.Column(db.String(150))
     nome_na_pasta = db.Column(db.String(150))
     author = db.Column(db.String(100))
+    thumb = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     '''
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlist.id'))

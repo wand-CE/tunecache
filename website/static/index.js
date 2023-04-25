@@ -12,7 +12,7 @@ function deleteAudio(audioId) {
     var quantidade_musicas = document
       .getElementById("musics")
       .getElementsByTagName("li").length;
-    if (quantidade_musicas == 0) {
+    if (quantidade_musicas.toString() == "0") {
       document.getElementById("controls").style.display = "none";
     }
   });

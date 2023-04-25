@@ -1,4 +1,29 @@
 {% extends 'base.html' %} {% block style_of_page %}
+<style>
+  .card {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%;
+    position: relative;
+    overflow: hidden;
+    border: 0;
+  }
+
+  .card img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card i {
+    font-size: 100px;
+    height: 0;
+    padding-top: 30%;
+  }
+</style>
 <link rel="stylesheet" href="../static/css/home.css" />
 {% endblock %} {% block title %}TuneCache{% endblock %} {% block content %}
 <main class="container my-5">
@@ -6,23 +31,11 @@
     <h2 class="mb-4">Playlists em destaque</h2>
     <div class="row">
       <div class="col-md-3 mb-4">
-        <div class="card h-100 bg-dark">
-          <div class="card-body">
-            <h3 class="card-title">Título da Playlist</h3>
-            <p class="card-text">Nome do artista</p>
-            <audio
-              src="caminho/para/musica1.mp3"
-              class="w-100"
-              controls
-            ></audio>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4">
-        <div class="card h-100 bg-dark">
-          <div class="card-body">
-            <h3 class="card-title">Adicionar Playlist</h3>
-          </div>
+        <div class="card">
+          <img
+            src="https://img.youtube.com/vi/tpu5-XLDGtk/maxresdefault.jpg"
+            alt="Capa da Playlist"
+          />
         </div>
       </div>
     </div>
@@ -31,116 +44,19 @@
     <h2 class="mb-4">Músicas recentes</h2>
     <div class="row">
       <div class="col-md-3 mb-4">
-        <div class="card h-100">
-          <img
-            src="caminho/para/imagem4.jpg"
-            class="card-img-top"
-            alt="Capa do álbum"
-          />
-          <div class="card-body">
-            <h3 class="card-title">Título da música</h3>
-            <p class="card-text">Nome do artista</p>
-            <audio
-              src="caminho/para/musica4.mp3"
-              class="w-100"
-              controls
-            ></audio>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4">
-        <div class="card h-100">
-          <img
-            src="caminho/para/imagem5.jpg"
-            class="card-img-top"
-            alt="Capa do álbum"
-          />
-          <div class="card-body">
-            <h3 class="card-title">Título da música</h3>
-            <p class="card-text">Nome do artista</p>
-            <audio
-              src="caminho/para/musica5.mp3"
-              class="w-100"
-              controls
-            ></audio>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4">
-        <div class="card h-100">
-          <img
-            src="caminho/para/imagem6.jpg"
-            class="card-img-top"
-            alt="Capa do álbum"
-          />
-          <div class="card-body">
-            <h3 class="card-title">Título da música</h3>
-            <p class="card-text">Nome do artista</p>
-            <audio
-              src="caminho/para/musica6.mp3"
-              class="w-100"
-              controls
-            ></audio>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4">
-        <div class="card h-100">
-          <img
-            src="caminho/para/imagem7.jpg"
-            class="card-img-top"
-            alt="Capa do álbum"
-          />
-          <div class="card-body">
-            <h3 class="card-title">Título da música</h3>
-            <p class="card-text">Nome do artista</p>
-            <audio
-              src="caminho/para/musica7.mp3"
-              class="w-100"
-              controls
-            ></audio>
-          </div>
-        </div>
+        <div class="card"></div>
       </div>
     </div>
   </section>
   <section class="artistas_em_destaque">
     <h2 class="mb-4">Artistas em destaque</h2>
     <div class="row">
-      <div class="col-md-3 mb-4">
-        <div class="card h-100">
+      <div class="col-md-2 mb-4">
+        <div class="card rounded-circle">
           <img
-            src="caminho/para/imagem1.jpg"
-            class="card-img-top"
-            alt="Capa do álbum"
+            src="https://yt3.googleusercontent.com/ytc/AGIKgqN5OUrAd-NdpBT1joP0rsTC6w0YK-ikAODO_fA2fA=s176-c-k-c0x00ffffff-no-rj"
+            alt="Icone Artista"
           />
-          <div class="card-body" style="border-radius: 10px">
-            <h3 class="card-title">Título da Playlist</h3>
-            <p class="card-text">Nome do artista</p>
-            <audio
-              src="caminho/para/musica1.mp3"
-              class="w-100"
-              controls
-            ></audio>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-4">
-        <div class="card h-100">
-          <img
-            src="caminho/para/imagem2.jpg"
-            class="card-img-top"
-            alt="Capa do álbum"
-          />
-          <div class="card-body">
-            <h3 class="card-title">Título da Playlist</h3>
-            <p class="card-text">Nome do artista</p>
-            <audio
-              src="caminho/para/musica2.mp3"
-              class="w-100"
-              controls
-            ></audio>
-          </div>
         </div>
       </div>
     </div>
