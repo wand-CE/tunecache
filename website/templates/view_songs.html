@@ -1,16 +1,17 @@
 {% extends 'base.html' %} {% block style_of_page %}
 <link rel="stylesheet" href="../static/css/all_songs.css" />
-{% endblock %} {% block title %}TuneCache{% endblock %} {% block content %}
+{% endblock %} {% block title %}{{playlist_title}}{% endblock %} {% block
+content %}
 <div class="container-fluid mb-5">
   <div class="row mb-5">
     <div class="col mb-5">
       <h4 align="center" class="mt-4">
-        Todas as Músicas
+        {{playlist_title}}
         <i
-          onclick="abrirModal()"
+          onclick="menu()"
           id="add_musicas"
           title="Adicionar Músicas"
-          class="bi bi-three-dots-vertical ml-5"
+          class="bi bi-plus-circle ml-5"
           style="font-size: 30px"
         ></i>
       </h4>
@@ -23,7 +24,7 @@
             <div style="flex: 3">Título</div>
             <div style="flex: 1">Cantor</div>
           </li>
-          {% for audio in user.audios %}
+          {% for audio in songs_list %}
           <li
             class="audio_lista{{ audio.id }} d-flex flex-row list-group-item "
           >
@@ -36,7 +37,8 @@
             <audio
               id="song{{ audio.id }}"
               class="songs"
-              src="static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
+              src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
+              title="{{ audio.title }}"
             ></audio>
             <button
               type="button"
@@ -56,23 +58,12 @@
       </div>
     </div>
   </div>
-  <div id="modal" class="modal modal-dialog-centered">
-    <div class="modal-content bg-dark">
+  <div id="menu" style="display: none" class="bg-dark">
+    <div>
       <span class="close1">&times;</span>
-      <h2>Adicionar Música</h2>
-      <form method="POST">
-        <div class="form-group">
-          <label for="titulo">Título:</label>
-          <input
-            type="text"
-            placeholder="Digite o Titulo da Música"
-            class="form-control"
-            id="titulo"
-            name="titulo"
-          />
-        </div>
-
-        <div class="form-group">
+      <h5>Adicionar Música</h5>
+      <ul>
+        <li>
           <label for="url">URL:</label>
           <input
             type="text"
@@ -81,9 +72,20 @@
             id="url"
             name="url"
           />
-        </div>
+        </li>
 
-        <div class="form-group">
+        <li>
+          <label for="titulo">Título:</label>
+          <input
+            type="text"
+            placeholder="Digite o Titulo da Música"
+            class="form-control"
+            id="titulo"
+            name="titulo"
+          />
+        </li>
+
+        <li>
           <label for="autor">Autor:</label>
           <input
             type="text"
@@ -92,26 +94,12 @@
             id="autor"
             name="autor"
           />
-        </div>
+        </li>
         <button type="submit" class="btn btn-primary">Adicionar</button>
-      </form>
-      <!--<form method="POST">
-        <input
-          name="video"
-          id="video"
-          class="form-control"
-          placeholder="Coloque a Url da Música"
-        />
-        <br />
-        <div align="center">
-          <button type="submit" class="btn btn-primary">
-            Adicionar Música
-          </button>
-        </div>
-      </form>-->
+      </ul>
     </div>
   </div>
-  <section id="controls" class="d-flex flex-row">
+  <section id="controls" class="flex-row">
     <div
       class="play_prev_next d-flex justify-content-start align-items-center flex-grow-1"
     >

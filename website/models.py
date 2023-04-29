@@ -1,6 +1,14 @@
 from flask_login import UserMixin
 from . import db
 
+playlist_audios = db.Table('playlist_audios',
+    db.Column('audio_id', db.Integer, db.ForeignKey('audio.id')),
+    db.Column('playlist_id', db.Integer, db.ForeignKey('playlist.id')))
+
+cantor_audios = db.Table('cantor_audios',
+    db.Column('audio_id', db.Integer, db.ForeignKey('audio.id')),
+    db.Column('cantor_id', db.Integer, db.ForeignKey('cantor.id')))
+
 class Audio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150))
@@ -8,31 +16,28 @@ class Audio(db.Model):
     author = db.Column(db.String(100))
     thumb = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    '''
-    playlist_id = db.Column(db.Integer, db.ForeignKey('playlist.id'))
-    cantor_id = db.Column(db.Integer, db.ForeignKey('cantor.id'))
-    
+    playlists = db.relationship('Playlist', backref='audios', secondary=playlist_audios)
+    cantores = db.relationship('Cantor', backref='audios', secondary=cantor_audios)
+
 
 class Playlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(150))
-    capa = db.Column(db.String(150))
-    audios = db.relationship('Audio')    
+    url_capa = db.Column(db.String(150))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
 
 class Cantor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
-    audios = db.relationship('Audio')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-'''
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))
     first_name = db.Column(db.String(150))
-    audios = db.relationship('Audio')
-    '''
-    playlists = db.relationship('Playlist')
-    cantores = db.relationship('Cantor')
-    '''
+    audios = db.relationship('Audio', backref='user')
+    playlists = db.relationship('Playlist', backref='user')
+    cantores = db.relationship('Cantor', backref='user')

@@ -12,9 +12,33 @@ function deleteAudio(audioId) {
     var quantidade_musicas = document
       .getElementById("musics")
       .getElementsByTagName("li").length;
-    if (quantidade_musicas.toString() == "0") {
+    if (quantidade_musicas == 1) {
       document.getElementById("controls").style.display = "none";
     }
+  });
+}
+
+function addPlaylist(playlistTitle) {
+  fetch("/add-playlist", {
+    method: "POST",
+    body: JSON.stringify({ playlistTitle: playlistTitle }),
+  }).then((_res) => {
+    // Seleciona o elemento onde o novo elemento será adicionado
+    var playlist_list = document.getElementById("playlist_list");
+    // Cria um novo elemento
+    const new_playlist = document.createElement("div");
+    new_playlist.classList.add("col-md-3", "mb-3");
+
+    // Define o conteúdo HTML da div
+    new_playlist.innerHTML = `
+      <a href="/playlists/${playlistTitle}">
+        <div class="card bg-dark text-light">
+          <img src="https://via.placeholder.com/350x150" class="card-img-top h-100" />
+          <h5 class="card-title ml-3">${playlistTitle}</h5>
+        </div>
+      </a>
+    `;
+    playlist_list.appendChild(new_playlist);
   });
 }
 
@@ -57,14 +81,14 @@ function abrirModal() {
 
   modal.style.display = "block";
 
-  span.onclick = function () {
-    modal.style.display = "none";
-  };
-
   window.onclick = function (event) {
     if (event.target == modal) {
       modal.style.display = "none";
     }
+
+    span.onclick = function () {
+      modal.style.display = "none";
+    };
   };
 
   function adicionarMusica() {
@@ -234,4 +258,19 @@ function shuffle_musics(list_songs) {
     [list_songs[i], list_songs[j]] = [list_songs[j], list_songs[i]];
   }
   return list_songs;
+}
+
+function menu() {
+  var menu = document.getElementById("menu");
+  if (menu.style.display == "none") {
+    menu.style.display = "flex";
+    document.getElementById("new_playlist_title").focus();
+  } else {
+    menu.style.display = "none";
+  }
+  const menuAddMusicas = document.getElementById("menu");
+  const addMusicasIcon = document.getElementById("add_musicas");
+  const addMusicasIconParent = addMusicasIcon.parentNode;
+
+  addMusicasIconParent.insertAdjacentElement("afterend", menuAddMusicas);
 }

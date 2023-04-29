@@ -1,40 +1,62 @@
-{% extends 'base.html' %} {% block style_of_page %} {% endblock %} {% block
-title %}TuneCache{% endblock %} {% block content %}
+{% extends 'base.html' %} {% block style_of_page %}
+<link rel="stylesheet" href="../static/css/playlists.css" />{% endblock %} {%
+block title %}TuneCache{% endblock %} {% block content %}
 
 <div class="container">
   <h1 class="mt-5 d-flex">Minhas Playlists</h1>
-  <button class="btn btn-light my-3">
+  <button class="btn btn-light my-3" onclick="menu()">
     <img
       src="https://cdn-icons-png.flaticon.com/512/565/565264.png"
       alt="Ícone de Adicionar Playlist"
       style="width: 30px"
     />
   </button>
-  <div class="row">
+  <div class="row" id="playlist_list">
+    {% for playlist in user.playlists %}
     <div class="col-md-3 mb-3">
-      <a href="#">
+      <a href="/playlists/{{ playlist.titulo }}" class="text-light">
         <div class="card bg-dark text-light">
           <img
             src="https://via.placeholder.com/350x150"
             class="card-img-top h-100"
           />
-          <h5 class="card-title ml-3">Playlist 1</h5>
+          <h5 class="card-title ml-3">
+            {{playlist.titulo}}
+            <a class="text-light">
+              <span
+                class="bi bi-three-dots-vertical float-right"
+                onclick="menu()"
+                style="cursor: pointer"
+              ></span>
+              <div id="menu" style="display: none">
+                <li>Excluir Playlist</li>
+              </div>
+            </a>
+          </h5>
         </div>
       </a>
     </div>
+    {% endfor%}
+    <div id="menu" class="col-md-3 mb-3" style="display: none">
+      <div class="card bg-dark text-light">
+        <img
+          src="https://via.placeholder.com/350x150"
+          class="card-img-top h-100"
+        />
+        <h5 class="card-title ml-3">
+          <input
+            type="text"
+            id="new_playlist_title"
+            placeholder="Insira o Titulo da playlist"
+          />
+        </h5>
+      </div>
+      <button
+        onclick="addPlaylist(document.getElementById('new_playlist_title').value)"
+      ></button>
+    </div>
   </div>
 </div>
-<style>
-  .titulo {
-    display: none;
-    position: absolute;
-    bottom: 0;
-    right: 0px;
-    width: 100%;
-    padding: 10px;
-    color: rgb(255, 255, 255);
-    background-color: rgba(0, 0, 0, 0.452);
-  }
-</style>
+<style></style>
 
 {% endblock %}
