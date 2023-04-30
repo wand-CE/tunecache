@@ -28,12 +28,12 @@ content %}
           <li
             class="audio_lista{{ audio.id }} d-flex flex-row list-group-item "
           >
-            <span id="audio_song{{ audio.id }}" style="flex: 3"
-              >{{ audio.title }}</span
-            >
-            <span clas="autor" style="margin-left: 50px; flex: 1"
-              >{{ audio.author }}</span
-            >
+            <span id="audio_song{{ audio.id }}" style="flex: 3">
+              {{ audio.title }}
+            </span>
+            <span clas="autor" style="margin-left: 50px; flex: 1">
+              {{ audio.author }}
+            </span>
             <audio
               id="song{{ audio.id }}"
               class="songs"
@@ -67,7 +67,7 @@ content %}
           <label for="url">URL:</label>
           <input
             type="text"
-            placeholder="Digite a Url da Música"
+            placeholder="Digite a Url da Música ou Playlist"
             class="form-control"
             id="url"
             name="url"
@@ -78,7 +78,7 @@ content %}
           <label for="titulo">Título:</label>
           <input
             type="text"
-            placeholder="Digite o Titulo da Música"
+            placeholder="Digite o Titulo da Música ou Playlist"
             class="form-control"
             id="titulo"
             name="titulo"
@@ -89,13 +89,19 @@ content %}
           <label for="autor">Autor:</label>
           <input
             type="text"
-            placeholder="Nome do cantor"
+            placeholder="Nome do cantor (pode deixar em branco se for playlist)"
             class="form-control"
             id="autor"
             name="autor"
           />
         </li>
-        <button type="submit" class="btn btn-primary">Adicionar</button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          onclick="addMusic(document.getElementById('url').value)"
+        >
+          Adicionar
+        </button>
       </ul>
     </div>
   </div>

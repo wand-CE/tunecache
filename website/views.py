@@ -2,8 +2,8 @@ import json
 import os
 from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
-from pytube import YouTube
-from .models import Audio, Playlist
+from pytube import YouTube, Playlist
+from .models import Audio, Playlist_personal
 from . import db
 
 
@@ -18,14 +18,15 @@ def home():
 @views.route('/allsongs', methods=['GET', 'POST'])
 @login_required
 def all_songs():
-    if request.method == 'POST':
+    """
+    len(video) < 1:
+        flash('URL pequena demais!', category='error')
+        if request.method == 'POST':
         titulo = request.form.get('titulo')
         video = request.form.get('url')
         autor = request.form.get('autor')
 
-        if len(video) < 1:
-            flash('URL pequena demais!', category='error')
-        else:
+        if e:
             yt = YouTube(str(video))
             thumb = yt.thumbnail_url
             if len(autor) == 0:
@@ -63,13 +64,15 @@ def all_songs():
 
             nome_mp3_pasta =  video_to_audio.split('songs/')
             nome_mp3_pasta = str(nome_mp3_pasta[1])
-            new_audio = Audio(user_id=current_user.id, title=titulo,
+            print(yt.video_id)
+            new_audio = Audio(video_id=yt.video_id, user_id=current_user.id, title=titulo,
                     nome_na_pasta=nome_mp3_pasta, author=autor,
                     thumb=thumb)
             print(new_audio)
             db.session.add(new_audio)
             db.session.commit()
             flash('Música Adicionada!', category='success')
+    """
     return render_template('view_songs.html',
                            user=current_user,
                            playlist_title='Todas as músicas',
@@ -79,7 +82,7 @@ def all_songs():
 @views.route('playlists/<playlist_title>', methods=['GET', 'POST'])
 @login_required
 def view_songs(playlist_title):
-    current_playlist = Playlist.query.filter_by(titulo=playlist_title).first()
+    current_playlist = Playlist_personal.query.filter_by(titulo=playlist_title).first()
     if current_playlist is None:
         return render_template('404.html'), 404
     elif request.method == 'POST':        
@@ -130,7 +133,7 @@ def view_songs(playlist_title):
             db.session.add(new_audio)
             print(current_playlist.audios)
             current_playlist.audios.append(new_audio)
-            db.session.commit()
+            db.session.commit()            
             flash('Música Adicionada!', category='success')
 
 
@@ -166,16 +169,117 @@ def delete_audio():
 @views.route('/add-playlist', methods=['POST'])
 def add_playlist():
     playlist = json.loads(request.data)
-    print(playlist)
     playlist_title = playlist['playlistTitle']
-    playlist = Playlist.query.filter_by(titulo=playlist_title).first()
-    print(playlist)
+    playlist = Playlist_personal.query.filter_by(titulo=playlist_title).first()
     if playlist is None:
-        new_playlist = Playlist(titulo=playlist_title, user_id=current_user.id)
+        new_playlist = Playlist_personal(titulo=playlist_title, user_id=current_user.id)
         db.session.add(new_playlist)
         db.session.commit()
     else:
         flash('Playlist já existe!', category='error')
+    return jsonify({})
+
+
+
+
+
+
+
+
+
+
+
+
+
+@views.route('/add-music', methods=['POST'])
+def add_music():
+    music = json.loads(request.data)
+    url = music['music_url']
+    if 'playlist' in url:
+        new_playlist = Playlist(url)
+        playlist = Playlist_personal.query.filter_by(titulo=new_playlist.title).first()
+        if playlist is None:        
+            video_urls = new_playlist.video_urls
+            new_playlist_personal = Playlist_personal(user_id=current_user.id,
+                                                    titulo=new_playlist.title,
+                                                    )
+            db.session.add(new_playlist_personal)
+            db.session.commit()
+            
+            current_playlist = Playlist_personal.query.filter_by(titulo=new_playlist.title).first()
+            for url in video_urls:
+                print(url)
+                yt = YouTube(url)
+                music = Audio.query.filter_by(video_id=yt.video_id).first()
+                if music is None:
+                    try_again = True
+                    while try_again:
+                        try:
+                            audio = yt.streams.get_audio_only()
+                            print(audio)
+                            download_audio = audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"))
+                            print(download_audio)
+                            base, ext = os.path.splitext(download_audio)
+                            print(download_audio)
+
+                            video_to_audio = base + '.mp3'
+                            print(video_to_audio)
+                            video_to_audio = video_to_audio.replace(" ", "_")
+                            print(video_to_audio)
+                            try:
+                                os.rename(download_audio, video_to_audio)
+                            except FileExistsError:
+                                os.remove(download_audio)
+
+                            nome_mp3_pasta =  video_to_audio.split('songs/')
+                            nome_mp3_pasta = str(nome_mp3_pasta[1])
+                            new_audio = Audio(user_id=current_user.id, video_id=yt.video_id, title=yt.title,
+                                    nome_na_pasta=nome_mp3_pasta, author=yt.author,
+                                    thumb=yt.thumbnail_url)
+                            db.session.add(new_audio)
+                            current_playlist.audios.append(new_audio)
+                            db.session.commit()
+                            try_again = False
+                        except:
+                            pass
+        else:
+            pass
+            # flash('Playlist já existe!', category='error') ela não aparece se não carregar a página
+            
+    else:
+        yt = YouTube(url)
+        music = Audio.query.filter_by(video_id=yt.video_id).first()
+        if music is None:
+                try_again = True
+                while try_again:
+                    try:
+                        audio = yt.streams.get_audio_only()
+                        print(audio)
+                        download_audio = audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"))
+                        print(download_audio)
+                        base, ext = os.path.splitext(download_audio)
+                        print(download_audio)
+
+                        video_to_audio = base + '.mp3'
+                        print(video_to_audio)
+                        video_to_audio = video_to_audio.replace(" ", "_")
+                        print(video_to_audio)
+                        try:
+                            os.rename(download_audio, video_to_audio)
+                        except FileExistsError:
+                            os.remove(download_audio)
+
+                        nome_mp3_pasta =  video_to_audio.split('songs/')
+                        nome_mp3_pasta = str(nome_mp3_pasta[1])
+                        new_audio = Audio(user_id=current_user.id, video_id=yt.video_id, title=yt.title,
+                                nome_na_pasta=nome_mp3_pasta, author=yt.author,
+                                thumb=yt.thumbnail_url)
+                        db.session.add(new_audio)
+                        db.session.commit()
+                        try_again = False
+                    except:
+                        pass
+        
     return jsonify({})
 
 

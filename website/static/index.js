@@ -42,6 +42,32 @@ function addPlaylist(playlistTitle) {
   });
 }
 
+function addMusic(Url) {
+  fetch("/add-music", {
+    method: "POST",
+    body: JSON.stringify({ music_url: Url }),
+  }).then((_res) => {
+    /*
+    // Seleciona o elemento onde o novo elemento será adicionado
+    var playlist_list = document.getElementById("playlist_list");
+    // Cria um novo elemento
+    const new_playlist = document.createElement("div");
+    new_playlist.classList.add("col-md-3", "mb-3");
+
+    // Define o conteúdo HTML da div
+    new_playlist.innerHTML = `
+      <a href="/playlists/${playlistTitle}">
+        <div class="card bg-dark text-light">
+          <img src="https://via.placeholder.com/350x150" class="card-img-top h-100" />
+          <h5 class="card-title ml-3">${playlistTitle}</h5>
+        </div>
+      </a>
+    `;
+    playlist_list.appendChild(new_playlist);
+    */
+  });
+}
+
 function adicionarAudio() {
   let audioUrl = document.getElementById("video");
   fetch("/adiciona-audio", {
@@ -131,6 +157,7 @@ for (let i = 0; i < songs.length; i++) {
 function updateDataMusic() {
   currentMusicId = document.getElementById(idSongs[index]);
 
+  document.title = currentMusicId.title;
   const progressbar = document.getElementById("progressbar");
   const textCurrentDuration = document.getElementById("current-duration");
   const textTotalDuration = document.getElementById("total-duration");
