@@ -193,92 +193,82 @@ def add_playlist():
 
 @views.route('/add-music', methods=['POST'])
 def add_music():
-    music = json.loads(request.data)
-    url = music['music_url']
+    music_request = json.loads(request.data)
+    url = music_request['music_url']
     if 'playlist' in url:
         new_playlist = Playlist(url)
         playlist = Playlist_personal.query.filter_by(titulo=new_playlist.title).first()
-        if playlist is None:        
+        if playlist is None:
             video_urls = new_playlist.video_urls
             new_playlist_personal = Playlist_personal(user_id=current_user.id,
-                                                    titulo=new_playlist.title,
-                                                    )
+                                                      titulo=new_playlist.title)
             db.session.add(new_playlist_personal)
             db.session.commit()
-            
+
             current_playlist = Playlist_personal.query.filter_by(titulo=new_playlist.title).first()
             for url in video_urls:
-                print(url)
                 yt = YouTube(url)
                 music = Audio.query.filter_by(video_id=yt.video_id).first()
                 if music is None:
                     try_again = True
+                    atempt = 0
                     while try_again:
                         try:
                             audio = yt.streams.get_audio_only()
-                            print(audio)
-                            download_audio = audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"))
-                            print(download_audio)
-                            base, ext = os.path.splitext(download_audio)
-                            print(download_audio)
+                            filename = f'{(audio.title).replace(" ","_")}.mp3'
 
-                            video_to_audio = base + '.mp3'
-                            print(video_to_audio)
-                            video_to_audio = video_to_audio.replace(" ", "_")
-                            print(video_to_audio)
-                            try:
-                                os.rename(download_audio, video_to_audio)
-                            except FileExistsError:
-                                os.remove(download_audio)
+                            audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"),
+                                            filename=filename)
 
-                            nome_mp3_pasta =  video_to_audio.split('songs/')
-                            nome_mp3_pasta = str(nome_mp3_pasta[1])
-                            new_audio = Audio(user_id=current_user.id, video_id=yt.video_id, title=yt.title,
-                                    nome_na_pasta=nome_mp3_pasta, author=yt.author,
-                                    thumb=yt.thumbnail_url)
+                            new_audio = Audio(user_id=current_user.id,
+                                              video_id=yt.video_id,
+                                              title=yt.title,
+                                              nome_na_pasta=filename,
+                                              author=yt.author,
+                                              thumb=yt.thumbnail_url)
                             db.session.add(new_audio)
                             current_playlist.audios.append(new_audio)
                             db.session.commit()
                             try_again = False
                         except:
-                            pass
+                            atempt += 1
+                            if atempt == 200:
+                                try_again = False
         else:
             pass
             # flash('Playlist já existe!', category='error') ela não aparece se não carregar a página
-            
+
     else:
         yt = YouTube(url)
         music = Audio.query.filter_by(video_id=yt.video_id).first()
         if music is None:
-                try_again = True
-                while try_again:
-                    try:
-                        audio = yt.streams.get_audio_only()
-                        print(audio)
-                        download_audio = audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"))
-                        print(download_audio)
-                        base, ext = os.path.splitext(download_audio)
-                        print(download_audio)
+            try_again = True
+            atempt = 0
+            while try_again:
+                try:
+                    audio = yt.streams.get_audio_only()
+                    filename = f'{(audio.title).replace(" ","_")}.mp3'
 
-                        video_to_audio = base + '.mp3'
-                        print(video_to_audio)
-                        video_to_audio = video_to_audio.replace(" ", "_")
-                        print(video_to_audio)
-                        try:
-                            os.rename(download_audio, video_to_audio)
-                        except FileExistsError:
-                            os.remove(download_audio)
+                    audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"),
+                                    filename=filename)
 
-                        nome_mp3_pasta =  video_to_audio.split('songs/')
-                        nome_mp3_pasta = str(nome_mp3_pasta[1])
-                        new_audio = Audio(user_id=current_user.id, video_id=yt.video_id, title=yt.title,
-                                nome_na_pasta=nome_mp3_pasta, author=yt.author,
-                                thumb=yt.thumbnail_url)
-                        db.session.add(new_audio)
-                        db.session.commit()
+                    titulo = music_request['titulo']
+                    cantor = music_request['cantor']
+
+                    new_audio = Audio(user_id=current_user.id,
+                                      video_id=yt.video_id,
+                                      title=titulo,
+                                      nome_na_pasta=filename,
+                                      author=cantor,
+                                      thumb=yt.thumbnail_url)
+                    db.session.add(new_audio)
+                    db.session.commit()
+                    try_again = False
+                except:
+                    atempt += 1
+                    if atempt == 200:                        
                         try_again = False
-                    except:
-                        pass
+                        return jsonify({}), 403
         
     return jsonify({})
 

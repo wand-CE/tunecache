@@ -42,30 +42,27 @@ function addPlaylist(playlistTitle) {
   });
 }
 
-function addMusic(Url) {
+function addMusic(Url, Titulo, Cantor) {
+  console.log("Adicionando");
   fetch("/add-music", {
     method: "POST",
-    body: JSON.stringify({ music_url: Url }),
-  }).then((_res) => {
-    /*
-    // Seleciona o elemento onde o novo elemento será adicionado
-    var playlist_list = document.getElementById("playlist_list");
-    // Cria um novo elemento
-    const new_playlist = document.createElement("div");
-    new_playlist.classList.add("col-md-3", "mb-3");
-
-    // Define o conteúdo HTML da div
-    new_playlist.innerHTML = `
-      <a href="/playlists/${playlistTitle}">
-        <div class="card bg-dark text-light">
-          <img src="https://via.placeholder.com/350x150" class="card-img-top h-100" />
-          <h5 class="card-title ml-3">${playlistTitle}</h5>
-        </div>
-      </a>
-    `;
-    playlist_list.appendChild(new_playlist);
-    */
-  });
+    body: JSON.stringify({ music_url: Url, titulo: Titulo, cantor: Cantor }),
+  })
+    .then((response) => {
+      alert(response);
+      if (!response.ok) {
+        throw new Error("Erro na solicitação");
+      } else {
+        alert("Musica Adicionada");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data); // Aqui, o valor retornado pela promessa é usado para fazer algo
+    })
+    .catch((error) => {
+      alert(error + ",  Música não adicionada");
+    });
 }
 
 function adicionarAudio() {
@@ -101,45 +98,6 @@ function atualizarConteudo() {
     .catch((error) => console.error(error));
 }
 
-function abrirModal() {
-  var modal = document.getElementById("modal");
-  var span = document.getElementsByClassName("close1")[0];
-
-  modal.style.display = "block";
-
-  window.onclick = function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-
-    span.onclick = function () {
-      modal.style.display = "none";
-    };
-  };
-
-  function adicionarMusica() {
-    var videoUrl = document.getElementById("video").value;
-
-    var formData = new FormData();
-    formData.append("videoUrl", videoUrl);
-    console.log(videoUrl);
-
-    fetch("/adicionar-video", {
-      method: "POST",
-      body: JSON.stringify({ aideoUrl: audioUrl }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Erro ao adicionar vídeo");
-        }
-        // Tratar a resposta da solicitação fetch aqui
-      })
-      .catch((error) => {
-        console.error("Erro ao adicionar vídeo:", error);
-      });
-  }
-}
-
 const controls = document.querySelector("#controls");
 
 var songs = document.getElementsByClassName("songs");
@@ -153,7 +111,15 @@ let tituloAtual;
 for (let i = 0; i < songs.length; i++) {
   idSongs.push(songs[i].id);
 }
-
+/*
+var audio = [];
+for (let i = 0; i < songs.length; i++) {
+  document
+    .getElementsByClassName("audio_lista" + i)
+    .addEventListener("click", currentMusicId);0
+}
+alert(audio);
+*/
 function updateDataMusic() {
   currentMusicId = document.getElementById(idSongs[index]);
 
@@ -266,10 +232,6 @@ function onMusicEnd() {
 
 for (var i = 0; i < songs.length; i++) {
   songs[i].addEventListener("ended", onMusicEnd);
-}
-
-function endMusic() {
-  currentMusicId.addEventListener("ended", onMusicEnd);
 }
 
 function secondsToMinutes(time) {
