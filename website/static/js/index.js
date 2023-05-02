@@ -2,6 +2,8 @@ if (window.history.replaceState) {
   window.history.replaceState(null, null, window.location.href);
 }
 
+var buttons = document.getElementsByClassName("delete_audio");
+console.log(buttons);
 function deleteAudio(audioId) {
   fetch("/delete-audio", {
     method: "POST",
@@ -60,7 +62,6 @@ function addMusic(url, titulo, cantor, playlist) {
     })
     .then((data) => {
       console.log("Musica Adicionada");
-      console.log("inicio");
       console.log(data);
       // Seleciona o elemento onde o novo elemento será adicionado
       var music_list = document.getElementById("musics");
@@ -107,7 +108,6 @@ function addMusic(url, titulo, cantor, playlist) {
       window.idSongs.push(last_id_audio);
       window.verify_songs();
       document.getElementById("controls").style.display = "flex";
-      console.log("Final");
     })
     .catch((error) => {
       console.error(error);
@@ -140,7 +140,7 @@ function addData(url, titulo, cantor) {
           }
         });
     } else {
-      addMusic(url, titulo, cantor);
+      addMusic(url, titulo, cantor, "NO");
     }
   } else {
     alert("Link Inválido");

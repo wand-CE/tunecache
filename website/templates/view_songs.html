@@ -38,12 +38,7 @@ content %}
               src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
               title="{{ audio.title }}"
             ></audio>
-            <button
-              type="button"
-              class="close"
-              style="cursor: pointer"
-              onCLick="deleteAudio({{ audio.id }})"
-            >
+            <button type="button" class="delete_audio close">
               <span
                 aria-hidden="true"
                 class="bi bi-trash"
@@ -58,7 +53,6 @@ content %}
   </div>
   <div id="menu" style="display: none" class="bg-dark">
     <div>
-      <span class="close1">&times;</span>
       <h5>Adicionar Música</h5>
       <ul>
         <li>

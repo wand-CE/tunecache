@@ -163,11 +163,13 @@ def add_music():
                 audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"),
                                 filename=filename)
 
+
                 titulo = music_request['titulo']
+
                 cantor = music_request['cantor']
+
                 if len(titulo.strip()) == 0:
                     titulo = audio.title
-
                 if len(cantor.strip()) == 0:
                     cantor = yt.author
 
@@ -178,7 +180,6 @@ def add_music():
                                   author=cantor,
                                   thumb=yt.thumbnail_url)
                 db.session.add(new_audio)
-
                 if music_request['playlist'] == 'YES':
                     current_playlist = Playlist_personal.query.order_by(Playlist_personal.id.desc()).first()
                     current_playlist.audios.append(new_audio)
@@ -198,8 +199,8 @@ def add_music():
                 atempt += 1
                 if atempt == 200:                        
                     try_again = False
-                    return jsonify({}), 403
-        
+                    return jsonify({}), 500
+
     return jsonify({})
 
 
