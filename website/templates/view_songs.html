@@ -25,13 +25,11 @@ content %}
             <div style="flex: 1">Cantor</div>
           </li>
           {% for audio in songs_list %}
-          <li
-            class="audio_lista{{ audio.id }} d-flex flex-row list-group-item "
-          >
+          <li class="audio_lista{{ audio.id }} d-flex flex-row list-group-item">
             <span id="audio_song{{ audio.id }}" style="flex: 3">
               {{ audio.title }}
             </span>
-            <span clas="autor" style="margin-left: 50px; flex: 1">
+            <span class="autor" style="margin-left: 50px; flex: 1">
               {{ audio.author }}
             </span>
             <audio
@@ -98,14 +96,14 @@ content %}
         <button
           type="submit"
           class="btn btn-primary"
-          onclick="addMusic(document.getElementById('url').value, document.getElementById('titulo').value, document.getElementById('autor').value)"
+          onclick="addData(document.getElementById('url').value, document.getElementById('titulo').value, document.getElementById('autor').value)"
         >
           Adicionar
         </button>
       </ul>
     </div>
   </div>
-  <section id="controls" class="flex-row">
+  <section id="controls" class="flex-row" style="display: none">
     <div
       class="play_prev_next d-flex justify-content-start align-items-center flex-grow-1"
     >
