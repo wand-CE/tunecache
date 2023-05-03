@@ -25,7 +25,10 @@ content %}
             <div style="flex: 1">Cantor</div>
           </li>
           {% for audio in songs_list %}
-          <li class="audio_lista{{ audio.id }} d-flex flex-row list-group-item">
+          <li
+            id="{{audio.id}}"
+            class="audio_lista{{ audio.id }} d-flex flex-row list-group-item"
+          >
             <span id="audio_song{{ audio.id }}" style="flex: 3">
               {{ audio.title }}
             </span>
@@ -131,4 +134,5 @@ content %}
     />
   </section>
 </div>
+<script src="../static/js/player.js"></script>
 {% endblock %}

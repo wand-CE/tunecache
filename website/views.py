@@ -30,66 +30,25 @@ def view_songs(playlist_title):
     current_playlist = Playlist_personal.query.filter_by(titulo=playlist_title).first()
     if current_playlist is None:
         return render_template('404.html'), 404
-    elif request.method == 'POST':
-        titulo = request.form.get('titulo')
-        video = request.form.get('url')
-        autor = request.form.get('autor')
-
-        if len(video) < 1:
-            flash('URL pequena demais!', category='error')
-        else:
-            yt = YouTube(str(video))
-            thumb = yt.thumbnail_url
-            if len(autor) == 0:
-                autor = yt.author
-            if len(titulo) == 0:
-                titulo = yt.title
-            for song in current_user.audios:
-                if titulo == song.title:
-                    flash('Música já adicionada!', category='error')
-                    return render_template('home.html', user=current_user)
-                        
-            try_again = True
-            while try_again:
-                try:
-                    audio = yt.streams.first()
-                    try_again=False
-                except:
-                    pass
-
-
-            download_audio = audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"))
-            base, ext = os.path.splitext(download_audio)
-
-            video_to_audio = base + '.mp3'
-            video_to_audio = video_to_audio.replace(" ", "_")
-            try:
-                os.rename(download_audio, video_to_audio)
-            except FileExistsError:
-                os.remove(download_audio)
-                flash('Música já adicionada!', category='error')
-                return render_template('home.html', user=current_user)
-
-            nome_mp3_pasta =  video_to_audio.split('songs/')
-            nome_mp3_pasta = str(nome_mp3_pasta[1])
-            new_audio = Audio(user_id=current_user.id, title=titulo,
-                    nome_na_pasta=nome_mp3_pasta, author=autor,
-                    thumb=thumb)
-            db.session.add(new_audio)
-            current_playlist.audios.append(new_audio)
-            db.session.commit()
-            flash('Música Adicionada!', category='success')
-
 
     return render_template('view_songs.html',
                            user=current_user,
                            playlist_title = playlist_title,
                            songs_list=current_playlist.audios)
 
+
+
 @views.route('/playlists', methods=['GET', 'POST'])
 @login_required
 def playlists():
     return render_template('playlists.html', user=current_user)
+
+
+@views.route('/cantores', methods=['GET', 'POST'])
+@login_required
+def singers():
+    return render_template('singers.html', user=current_user)
+
 
 
 
@@ -128,6 +87,8 @@ def add_playlist():
 
     if 'url' in playlist_data:
         urls = playlist_youtube.video_urls
+        print(len(urls))
+        print(urls)
         return jsonify({ "urls" : list(urls)})
 
 
@@ -201,7 +162,7 @@ def add_music():
                     try_again = False
                     return jsonify({}), 500
 
-    return jsonify({})
+    return jsonify({'added_before': 'YES'})
 
 
 

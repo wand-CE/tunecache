@@ -3,12 +3,20 @@ if (window.history.replaceState) {
 }
 
 var buttons = document.getElementsByClassName("delete_audio");
-console.log(buttons);
+
+for (let i = 0; i < buttons.length; i++) {
+  const id = buttons[i].parentElement.id;
+  buttons[i].addEventListener("click", () => {
+    deleteAudio(id);
+  });
+}
+
 function deleteAudio(audioId) {
   fetch("/delete-audio", {
     method: "POST",
     body: JSON.stringify({ audioId: audioId }),
   }).then((_res) => {
+    console.log(audioId);
     rmAudio = document.querySelector(".audio_lista" + audioId);
     rmAudio.remove();
     var quantidade_musicas = document
@@ -63,11 +71,18 @@ function addMusic(url, titulo, cantor, playlist) {
     .then((data) => {
       console.log("Musica Adicionada");
       console.log(data);
+      if ("added_before" in data) {
+        if (data["added_before"] == "YES") {
+          console.log("Já adicionado");
+          return "";
+        }
+      }
       // Seleciona o elemento onde o novo elemento será adicionado
       var music_list = document.getElementById("musics");
       // Cria um novo elemento
       const new_song = document.createElement("li");
 
+      new_song.id = `${data["id"]}`;
       new_song.classList.add(
         `audio_lista${data["id"]}`,
         "d-flex",
@@ -89,18 +104,12 @@ function addMusic(url, titulo, cantor, playlist) {
       src="../static/users/${data["user_id"]}/songs/${data["nome_na_pasta"]}"
       title="${data["title"]}"
     ></audio>
-    <button
-      type="button"
-      class="close"
-      style="cursor: pointer"
-      onCLick="deleteAudio(${data["id"]})"
-    >
-      <span
-        aria-hidden="true"
-        class="bi bi-trash"
-        style="color: white"
-      ></span>
-    </button>`;
+    <button type="button" class="delete_audio close">
+    <span
+    aria-hidden="true"
+    class="bi bi-trash"
+    style="color: white"></span>
+            </button>`;
       music_list.appendChild(new_song);
       var songs = document.getElementsByClassName("songs");
       songs[songs.length - 1].addEventListener("ended", window.onMusicEnd);
