@@ -17,11 +17,14 @@ for (let i = 0; i < songs.length; i++) {
 }
 window.idSongs;
 
+const progressbar = document.getElementById("progressbar");
+const volumebar = document.getElementById("volume");
+
 function updateDataMusic() {
   currentMusicId = document.getElementById(idSongs[index]);
 
   document.title = currentMusicId.title;
-  const progressbar = document.getElementById("progressbar");
+
   const textCurrentDuration = document.getElementById("current-duration");
   const textTotalDuration = document.getElementById("total-duration");
 
@@ -43,6 +46,64 @@ function updateDataMusic() {
     progressbar.valueAsNumber = currentMusicId.currentTime;
   };
 }
+
+var val;
+
+progressbar.addEventListener("touchstart", function (event) {
+  if (event.cancelable) {
+    event.preventDefault();
+  }
+  // armazena a posição inicial do toque
+  var touch = event.targetTouches[0];
+  val =
+    ((touch.clientX - progressbar.getBoundingClientRect().left) /
+      progressbar.clientWidth) *
+    parseInt(progressbar.max);
+});
+
+progressbar.addEventListener("touchend", function (event) {
+  if (event.cancelable) {
+    event.preventDefault();
+  }
+  currentMusicId.currentTime = val;
+  progressbar.value = val;
+});
+
+let valvol = 0;
+volumebar.addEventListener("touchstart", function (event) {
+  var touch = event.targetTouches[0];
+  var valvol =
+    (((touch.clientX - volumebar.getBoundingClientRect().left) /
+      volumebar.clientWidth) *
+      parseFloat(volumebar.max)) /
+    100;
+  if (valvol >= 0 && valvol <= 1) {
+    currentMusicId.volume = valvol;
+    if (valvol < 0.01) {
+      document.getElementById("vol-icon").className = "bi-volume-mute-fill";
+    } else if (valvol > 0.01) {
+      document.getElementById("vol-icon").className = "bi-volume-up-fill";
+    }
+  }
+});
+
+volumebar.addEventListener("touchmove", function (event) {
+  var touch = event.targetTouches[0];
+  var valvol =
+    (((touch.clientX - volumebar.getBoundingClientRect().left) /
+      volumebar.clientWidth) *
+      parseFloat(volumebar.max)) /
+    100;
+  if (valvol <= 1) {
+    if (valvol <= 0) {
+      currentMusicId.volume = 0;
+      document.getElementById("vol-icon").className = "bi-volume-mute-fill";
+    } else if (valvol > 0.01) {
+      currentMusicId.volume = valvol;
+      document.getElementById("vol-icon").className = "bi-volume-up-fill";
+    }
+  }
+});
 
 function verify_songs() {
   if (idSongs.length > 0) {
@@ -146,6 +207,30 @@ function shuffle_musics(list_songs) {
     [list_songs[i], list_songs[j]] = [list_songs[j], list_songs[i]];
   }
   return list_songs;
+}
+
+let listas = document.getElementsByTagName("li");
+for (const lista of listas) {
+  lista.addEventListener("click", (ev) => {
+    if (ev.target.className != "bi bi-trash") {
+      if (lista.id != "") {
+        new_index = Array.from(idSongs).indexOf(`song${lista.id}`);
+        if (index != new_index) {
+          index = new_index;
+          currentMusicId.pause();
+          currentMusicId.currentTime = 0;
+          updateDataMusic();
+          button_playpause.className = "bi-pause-fill";
+          currentMusicId.play();
+        } else {
+          if (currentMusicId.paused == true) {
+            button_playpause.className = "bi-pause-fill";
+            currentMusicId.play();
+          }
+        }
+      }
+    }
+  });
 }
 
 window.onMusicEnd = onMusicEnd;

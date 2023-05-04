@@ -2,6 +2,10 @@ if (window.history.replaceState) {
   window.history.replaceState(null, null, window.location.href);
 }
 
+if (!window.location.href.includes("cantores")) {
+  document.getElementById("add_musicas").style.removeProperty("display");
+}
+
 var buttons = document.getElementsByClassName("delete_audio");
 
 for (let i = 0; i < buttons.length; i++) {
@@ -156,16 +160,24 @@ function addData(url, titulo, cantor) {
   }
 }
 
-function menu() {
-  var menu = document.getElementById("menu");
-  if (menu.style.display == "none") {
-    menu.style.display = "flex";
-  } else {
-    menu.style.display = "none";
-  }
-  const menuAddMusicas = document.getElementById("menu");
-  const addMusicasIcon = document.getElementById("add_musicas");
-  const addMusicasIconParent = addMusicasIcon.parentNode;
+var menu = document.getElementById("menu");
 
-  addMusicasIconParent.insertAdjacentElement("afterend", menuAddMusicas);
-}
+menu.querySelectorAll("*").forEach((elemento) => {
+  elemento.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+});
+
+window.addEventListener("click", (ev) => {
+  if (ev.target.id == "add_musicas") {
+    if (menu.style.display == "none") {
+      menu.style.display = "flex";
+    } else {
+      menu.style.display = "none";
+    }
+  } else {
+    if (ev.target.id != "menu") {
+      menu.style.display = "none";
+    }
+  }
+});

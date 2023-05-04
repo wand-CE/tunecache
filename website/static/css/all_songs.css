@@ -7,7 +7,8 @@ ul#musics li {
   font-size: 14px;
 }
 span.autor {
-  margin-left: 50px;
+  height: 100%;
+  width: 100%;
 }
 .modal {
   display: none;
@@ -77,35 +78,16 @@ footer {
   display: none;
 }
 
-#progressbar {
-  position: absolute;
-  top: 0;
-  margin: 0 10px;
-  -webkit-appearance: none;
-  background-color: #ccc;
-  height: 7px;
-  cursor: pointer;
-}
-
-#progressbar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #fff;
-  cursor: pointer;
-}
-
+#progressbar,
 #volume {
-  width: 100px;
+  margin: 0 10px;
   -webkit-appearance: none;
   background-color: #ccc;
   height: 7px;
-  margin: 0 10px;
   cursor: pointer;
 }
 
+#progressbar::-webkit-slider-thumb,
 #volume::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -115,6 +97,14 @@ footer {
   background-color: #fff;
   cursor: pointer;
 }
+#progressbar {
+  position: absolute;
+  top: 0;
+}
+#volume {
+  width: 100px;
+  border-radius: 5px;
+}
 
 @media (min-width: 900px) {
   .play_prev_next {
@@ -122,6 +112,9 @@ footer {
   }
   .musica-atual-container {
     width: 100%;
+  }
+  .volume {
+    margin-right: 50px;
   }
 }
 
@@ -133,7 +126,7 @@ footer {
   font-size: 14px;
   padding: 10px;
   position: absolute;
-  top: 0;
+  top: 170px;
   width: 600px;
   z-index: 1;
 }
@@ -187,18 +180,20 @@ footer {
     width: 100%;
   }
 
-  .play_prev_next,
-  .volume {
+  .play_prev_next {
     position: absolute;
     bottom: 0;
   }
 
-  .play_prev_next {
-    left: 10px;
+  div.volume {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 10px;
   }
 
-  .volume {
-    left: 230px;
+  .play_prev_next {
+    left: 10px;
   }
 
   .duration_music {
@@ -207,13 +202,29 @@ footer {
     left: 90px;
   }
 
-  #menu {
+  div#menu div {
     width: 100%;
-    margin: 0;
-    padding: 10px;
+  }
+
+  div#menu ul {
+    width: 100%;
+  }
+
+  div#menu ul {
+    width: 100%;
+  }
+
+  #menu {
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
+
+  #menu input {
+    width: 100%;
   }
 
   #menu li {
-    width: 10px;
+    width: 100%;
   }
 }

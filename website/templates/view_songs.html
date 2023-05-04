@@ -8,11 +8,10 @@ content %}
       <h4 align="center" class="mt-4">
         {{playlist_title}}
         <i
-          onclick="menu()"
           id="add_musicas"
           title="Adicionar Músicas"
           class="bi bi-plus-circle ml-5"
-          style="font-size: 30px"
+          style="font-size: 30px; display: none"
         ></i>
       </h4>
       <div class="d-flex flex-wrap justify-content-center">
@@ -119,7 +118,7 @@ content %}
       <span id="musica_atual"></span>
     </div>
     <div
-      class="volume d-flex justify-content-end align-items-center flex-grow-1 mr-5"
+      class="volume d-flex justify-content-end align-items-center flex-grow-1"
     >
       <i id="vol-icon" class="bi bi-volume-up-fill"></i>
       <input id="volume" type="range" min="0" max="100" step="1" value="100" />

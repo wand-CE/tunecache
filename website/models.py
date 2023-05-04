@@ -5,9 +5,9 @@ playlist_audios = db.Table('playlist_audios',
     db.Column('audio_id', db.Integer, db.ForeignKey('audio.id')),
     db.Column('playlist_id', db.Integer, db.ForeignKey('playlist_personal.id')))
 
-cantor_audios = db.Table('cantor_audios',
+singer_audios = db.Table('singer_audios',
     db.Column('audio_id', db.Integer, db.ForeignKey('audio.id')),
-    db.Column('cantor_id', db.Integer, db.ForeignKey('cantor.id')))
+    db.Column('singer', db.Integer, db.ForeignKey('singer.id')))
 
 class Audio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,7 +18,7 @@ class Audio(db.Model):
     thumb = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     playlists = db.relationship('Playlist_personal', backref='audios', secondary=playlist_audios)
-    cantores = db.relationship('Cantor', backref='audios', secondary=cantor_audios)
+    singers = db.relationship('Singer', backref='audios', secondary=singer_audios)
 
 
 class Playlist_personal(db.Model):
@@ -28,7 +28,7 @@ class Playlist_personal(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
-class Cantor(db.Model):
+class Singer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -41,4 +41,4 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(150))
     audios = db.relationship('Audio', backref='user')
     playlists = db.relationship('Playlist_personal', backref='user')
-    cantores = db.relationship('Cantor', backref='user')
+    singers = db.relationship('Singer', backref='user')

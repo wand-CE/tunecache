@@ -1,9 +1,10 @@
 import json
 import os
+import re
 from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
-from pytube import YouTube, Playlist
-from .models import Audio, Playlist_personal
+from .pytube import YouTube, Playlist
+from .models import Audio, Playlist_personal, Singer
 from . import db
 
 
@@ -24,6 +25,13 @@ def all_songs():
                            songs_list=current_user.audios)
 
 
+
+
+@views.route('/playlists', methods=['GET', 'POST'])
+@login_required
+def playlists():
+    return render_template('playlists.html', user=current_user)
+
 @views.route('playlists/<playlist_title>', methods=['GET', 'POST'])
 @login_required
 def view_songs(playlist_title):
@@ -36,20 +44,22 @@ def view_songs(playlist_title):
                            playlist_title = playlist_title,
                            songs_list=current_playlist.audios)
 
-
-
-@views.route('/playlists', methods=['GET', 'POST'])
-@login_required
-def playlists():
-    return render_template('playlists.html', user=current_user)
-
-
 @views.route('/cantores', methods=['GET', 'POST'])
 @login_required
 def singers():
     return render_template('singers.html', user=current_user)
 
+@views.route('cantores/<singer_title>', methods=['GET', 'POST'])
+@login_required
+def view_singers(singer_title):
+    current_singer = Singer.query.filter_by(name=singer_title).first()
+    if current_singer is None:
+        return render_template('404.html'), 404
 
+    return render_template('view_songs.html',
+                           user=current_user,
+                           playlist_title = singer_title,
+                           songs_list=current_singer.audios)
 
 
 @views.route('/delete-audio', methods=['POST'])
@@ -87,8 +97,6 @@ def add_playlist():
 
     if 'url' in playlist_data:
         urls = playlist_youtube.video_urls
-        print(len(urls))
-        print(urls)
         return jsonify({ "urls" : list(urls)})
 
 
@@ -120,6 +128,8 @@ def add_music():
             try:
                 audio = yt.streams.get_audio_only()
                 filename = f'{(audio.title).replace(" ","_")}.mp3'
+                
+                filename = re.sub(r'[^\w\-_.]', '', filename)
 
                 audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"),
                                 filename=filename)
@@ -141,6 +151,15 @@ def add_music():
                                   author=cantor,
                                   thumb=yt.thumbnail_url)
                 db.session.add(new_audio)
+
+                current_singer = Singer.query.filter_by(name=cantor).first()
+                if current_singer is None:
+                    current_singer = Singer(user_id=current_user.id,
+                                            name=cantor)
+                    db.session.add(current_singer)                    
+                    
+                current_singer.audios.append(new_audio)
+                    
                 if music_request['playlist'] == 'YES':
                     current_playlist = Playlist_personal.query.order_by(Playlist_personal.id.desc()).first()
                     current_playlist.audios.append(new_audio)
