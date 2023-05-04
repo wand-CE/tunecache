@@ -14,7 +14,7 @@ import pytube.exceptions as exceptions
 from pytube import extract, request
 from pytube import Stream, StreamQuery
 from pytube.helpers import install_proxy
-from pytube.innertube import InnerTube
+from innertube import InnerTube
 from pytube.metadata import YouTubeMetadata
 from pytube.monostate import Monostate
 
