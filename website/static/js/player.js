@@ -48,7 +48,7 @@ function updateDataMusic() {
   const data = currentMusicId.dataset.info.split("|");
   console.log(data);
   if (mediaSession && currentMusicId) {
-    if (index > 0) {
+    if (index != 0) {
       mediaSession.metadata = new MediaMetadata({
         title: data[0],
         artist: data[1],
