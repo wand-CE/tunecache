@@ -38,7 +38,7 @@ content %}
               id="song{{ audio.id }}"
               class="songs"
               src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
-              title="{{ audio.title }}"
+              data-info="{{ audio.title }}|{{ audio.author }}|{{audio.thumb}}"
             ></audio>
             <button type="button" class="delete_audio close">
               <span

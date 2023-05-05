@@ -23,8 +23,6 @@ const volumebar = document.getElementById("volume");
 function updateDataMusic() {
   currentMusicId = document.getElementById(idSongs[index]);
 
-  document.title = currentMusicId.title;
-
   const textCurrentDuration = document.getElementById("current-duration");
   const textTotalDuration = document.getElementById("total-duration");
 
@@ -45,6 +43,47 @@ function updateDataMusic() {
     );
     progressbar.valueAsNumber = currentMusicId.currentTime;
   };
+
+  const mediaSession = navigator.mediaSession;
+  const data = currentMusicId.dataset.info.split("|");
+  console.log(data);
+  if (mediaSession && currentMusicId) {
+    if (index > 0) {
+      mediaSession.metadata = new MediaMetadata({
+        title: data[0],
+        artist: data[1],
+        artwork: [{ src: data[2], type: "image/jpeg" }],
+      });
+      mediaSession.setActionHandler("play", function () {
+        currentMusicId.play();
+        button_playpause.className = "bi bi-pause-fill";
+      });
+      mediaSession.setActionHandler("pause", function () {
+        currentMusicId.pause();
+        button_playpause.className = "bi bi-play-fill";
+      });
+      mediaSession.setActionHandler("previoustrack", function () {
+        index -= 1;
+        if (index < 0) {
+          index = idSongs.length - 1;
+        }
+        currentMusicId.pause();
+        currentMusicId.currentTime = 0;
+        updateDataMusic();
+        currentMusicId.play();
+      });
+      mediaSession.setActionHandler("nexttrack", function () {
+        index += 1;
+        if (index == idSongs.length) {
+          index = 0;
+        }
+        currentMusicId.pause();
+        currentMusicId.currentTime = 0;
+        updateDataMusic();
+        currentMusicId.play();
+      });
+    }
+  }
 }
 
 var val;

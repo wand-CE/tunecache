@@ -13,7 +13,7 @@ from pytube.version import __version__
 from pytube.streams import Stream
 from pytube.captions import Caption
 from pytube.query import CaptionQuery, StreamQuery
-from pytube.__main__ import YouTube
+from .__main__ import YouTube
 from pytube.contrib.playlist import Playlist
 from pytube.contrib.channel import Channel
 from pytube.contrib.search import Search
