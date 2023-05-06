@@ -106,7 +106,7 @@ function addMusic(url, titulo, cantor, playlist) {
       id="song${data["id"]}"
       class="songs"
       src="../static/users/${data["user_id"]}/songs/${data["nome_na_pasta"]}"
-      title="${data["title"]}"
+      data-info="${data["title"]}|${data["author"]}|${data["thumb"]}"
     ></audio>
     <button type="button" class="delete_audio close">
     <span
@@ -114,6 +114,7 @@ function addMusic(url, titulo, cantor, playlist) {
     class="bi bi-trash"
     style="color: white"></span>
             </button>`;
+
       music_list.appendChild(new_song);
       var songs = document.getElementsByClassName("songs");
       songs[songs.length - 1].addEventListener("ended", window.onMusicEnd);

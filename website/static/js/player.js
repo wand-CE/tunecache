@@ -33,22 +33,10 @@ function updateDataMusic() {
 
   textTotalDuration.innerText = secondsToMinutes(currentMusicId.duration);
 
-  currentMusicId.addEventListener("loadedmetadata", function () {
-    textTotalDuration.innerText = secondsToMinutes(currentMusicId.duration);
-  });
-
-  currentMusicId.ontimeupdate = function () {
-    textCurrentDuration.innerText = secondsToMinutes(
-      currentMusicId.currentTime
-    );
-    progressbar.valueAsNumber = currentMusicId.currentTime;
-  };
-
-  const mediaSession = navigator.mediaSession;
-  const data = currentMusicId.dataset.info.split("|");
-  console.log(data);
-  if (mediaSession && currentMusicId) {
-    if (index != 0) {
+  currentMusicId.addEventListener("play", function () {
+    const mediaSession = navigator.mediaSession;
+    const data = currentMusicId.dataset.info.split("|");
+    if (mediaSession) {
       mediaSession.metadata = new MediaMetadata({
         title: data[0],
         artist: data[1],
@@ -82,8 +70,26 @@ function updateDataMusic() {
         updateDataMusic();
         currentMusicId.play();
       });
+      mediaSession.setActionHandler("stop", function () {
+        if (!currentMusicId.paused) {
+          currentMusicId.pause();
+        }
+        button_playpause.className = "bi bi-play-fill";
+      });
     }
-  }
+  });
+
+  currentMusicId.addEventListener("loadedmetadata", function () {
+    textTotalDuration.innerText = secondsToMinutes(currentMusicId.duration);
+    progressbar.max = currentMusicId.duration;
+  });
+
+  currentMusicId.ontimeupdate = function () {
+    textCurrentDuration.innerText = secondsToMinutes(
+      currentMusicId.currentTime
+    );
+    progressbar.valueAsNumber = currentMusicId.currentTime;
+  };
 }
 
 var val;
@@ -147,9 +153,6 @@ volumebar.addEventListener("touchmove", function (event) {
 function verify_songs() {
   if (idSongs.length > 0) {
     updateDataMusic();
-    currentMusicId.addEventListener("loadedmetadata", function () {
-      progressbar.max = currentMusicId.duration;
-    });
     document.getElementById("controls").style.display = "flex";
   } else {
     document.getElementById("controls").style.display = "none";

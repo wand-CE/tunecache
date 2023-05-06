@@ -173,7 +173,8 @@ def add_music():
                     "author" : audio.author,
                     "title" : audio.title,
                     "nome_na_pasta" : audio.nome_na_pasta,
-                    "user_id" : audio.user_id
+                    "user_id" : audio.user_id,
+                    "thumb": audio.thumb,
                     })
             except:
                 atempt += 1
