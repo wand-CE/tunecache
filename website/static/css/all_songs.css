@@ -238,9 +238,7 @@ footer {
   width: 100px;
   display: none;
   border: 1px solid gray;
-  background-color: white;
   box-shadow: 2px 2px 5px gray;
-  padding: 0 7px 0 7px;
   top: 85%;
   right: 0;
   z-index: 9999;
@@ -248,27 +246,37 @@ footer {
 
 .music_options ul {
   color: black;
-  background-color: white;
+  background-color: rgb(68, 66, 66);
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .music_options li {
+  text-align: center;
   margin-bottom: 5px;
+  width: 100%;
+  color: white;
+}
+
+.edit_audio:hover {
+  background-color: #252121;
 }
 
 .music_options li:last-child {
   margin-bottom: 0;
 }
 
-.music_options a {
-  text-decoration: none;
-  font-size: 14px;
-}
-
 .music_button {
   position: relative;
   border: none;
   cursor: pointer;
+}
+
+.delete_audio {
+  background-color: rgb(181, 31, 31);
+}
+
+.delete_audio:hover {
+  background-color: rgb(98, 10, 10);
 }

@@ -51,14 +51,17 @@ function updateDataMusic() {
         artist: data[1],
         artwork: [{ src: data[2], type: "image/jpeg" }],
       });
+
       mediaSession.setActionHandler("play", function () {
         currentMusicId.play();
         button_playpause.className = "bi bi-pause-fill";
       });
+
       mediaSession.setActionHandler("pause", function () {
         currentMusicId.pause();
         button_playpause.className = "bi bi-play-fill";
       });
+
       mediaSession.setActionHandler("previoustrack", function () {
         index -= 1;
         if (index < 0) {
@@ -69,6 +72,7 @@ function updateDataMusic() {
         updateDataMusic();
         currentMusicId.play();
       });
+
       mediaSession.setActionHandler("nexttrack", function () {
         index += 1;
         if (index == idSongs.length) {
@@ -78,13 +82,6 @@ function updateDataMusic() {
         currentMusicId.currentTime = 0;
         updateDataMusic();
         currentMusicId.play();
-      });
-      mediaSession.setActionHandler("seekbackward", function () {
-        currentMusicId.currentTime -= 5;
-      });
-
-      mediaSession.setActionHandler("seekforward", function () {
-        currentMusicId.currentTime += 5;
       });
 
       mediaSession.setActionHandler("stop", function () {
@@ -194,7 +191,7 @@ controls.addEventListener("click", function (ev) {
 
     if (ev.target.id == "vol-icon") {
       currentMusicId.muted = !currentMusicId.muted;
-      if (currentMusicId.muted == true) {
+      if (currentMusicId.muted) {
         document.getElementById("vol-icon").className = "bi-volume-mute-fill";
       } else {
         document.getElementById("vol-icon").className = "bi-volume-up-fill";
@@ -264,28 +261,34 @@ let items = document.querySelector("#musics");
 let listas = Array.from(items.children);
 for (const lista of listas) {
   lista.addEventListener("click", (ev) => {
-    if (
-      ev.target.className != "bi bi-three-dots-vertical" &&
-      !ev.target.closest(".music_options")
-    ) {
-      if (lista.id != "") {
-        new_index = Array.from(idSongs).indexOf(`song${lista.id}`);
-        if (index != new_index) {
-          index = new_index;
-          currentMusicId.pause();
-          currentMusicId.currentTime = 0;
-          updateDataMusic();
+    play_on_click_li(ev, lista);
+  });
+}
+
+function play_on_click_li(ev, lista) {
+  console.log(ev.target.closest(".music_options"));
+  console.log(ev.target);
+  if (
+    ev.target.className != "bi bi-three-dots-vertical" &&
+    !ev.target.closest(".music_options")
+  ) {
+    if (lista.id != "") {
+      new_index = Array.from(idSongs).indexOf(`song${lista.id}`);
+      if (index != new_index) {
+        index = new_index;
+        currentMusicId.pause();
+        currentMusicId.currentTime = 0;
+        updateDataMusic();
+        button_playpause.className = "bi-pause-fill";
+        currentMusicId.play();
+      } else {
+        if (currentMusicId.paused == true) {
           button_playpause.className = "bi-pause-fill";
           currentMusicId.play();
-        } else {
-          if (currentMusicId.paused == true) {
-            button_playpause.className = "bi-pause-fill";
-            currentMusicId.play();
-          }
         }
       }
     }
-  });
+  }
 }
 
 let arrow_title = document.getElementById("arrow_title");

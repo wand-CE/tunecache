@@ -32,6 +32,23 @@ function deleteAudio(audioId) {
   });
 }
 
+function editAudio(audioId) {
+  fetch("/edit-audio", {
+    method: "POST",
+    body: JSON.stringify({ audioId: audioId }),
+  }).then((_res) => {
+    rmAudio = document.querySelector(".audio_lista" + audioId);
+    rmAudio.remove();
+    var quantidade_musicas = document
+      .getElementById("musics")
+      .getElementsByTagName("li").length;
+    if (quantidade_musicas == 1) {
+      document.getElementById("controls").style.display = "none";
+    }
+    window.update_music_list();
+  });
+}
+
 function addPlaylist(playlistTitle) {
   fetch("/add-playlist", {
     method: "POST",
@@ -192,6 +209,12 @@ window.addEventListener("click", (ev) => {
       menu.style.display = "none";
     }
   }
+  /*
+  console.log(ev.target.className);
+  if (ev.target.className != "bi bi-three-dots-vertical") {
+    music_options = querySelectorAll("")
+  }
+  */
 });
 
 // Adiciona um event listener para o botão de opções
@@ -204,3 +227,24 @@ optionsButtons.forEach(function (optionsButton) {
       optionsMenu.style.display === "block" ? "none" : "block";
   });
 });
+/*
+function focusEnd(element) {
+  element.contentEditable = true;
+  element.innerText += " ";
+  element.focus();
+
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  range.collapse(false);
+
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+const button = document.getElementById("button");
+button.addEventListener("click", () => {
+  const elemento = document.getElementById("meuElemento");
+  focusEnd(elemento);
+});
+*/

@@ -25,7 +25,7 @@ def login():
             if check_password_hash(user.password, password):
                 flash(f'Seja bem-vindo(a) {user.first_name}', category='success')
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                return redirect(url_for('views.all_songs'))
             else:
                 flash('Senha incorreta, tente novamente.', category='error')
         else:
@@ -44,7 +44,7 @@ def logout():
 def sign_up():
     if current_user.is_authenticated:
             flash('Voce já está logado.', category='error')
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.all_songs'))
     elif request.method == 'POST':
         email = request.form.get('email')
         first_name = request.form.get('firstName')
@@ -77,6 +77,6 @@ def sign_up():
             login_user(new_user, remember=True)
 
             flash('Conta criada!', category='success')
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.all_songs'))
 
     return render_template('sign_up.html', user=current_user)
