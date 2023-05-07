@@ -13,20 +13,46 @@ content %}
           class="bi bi-plus-circle ml-5"
           style="font-size: 30px; display: none"
         ></i>
+        <i
+          id="shuffle_musics"
+          title="ordem aleatória"
+          class="bi bi-shuffle ml-5"
+          style="font-size: 30px"
+        ></i>
       </h4>
       <div class="d-flex flex-wrap justify-content-center">
         <ul class="list-group list-group-flush" id="musics">
           <li
             class="d-flex flex-row list-group-item"
             style="font-size: large; font-weight: bold"
+            data-target="audio_lista"
           >
-            <div style="flex: 3">Título</div>
-            <div style="flex: 1">Cantor</div>
+            <div style="flex: 3">
+              <span id="title"
+                >Título
+                <span
+                  class="bi bi-arrow-down-up"
+                  id="arrow_title"
+                  style="font-size: larger"
+                ></span
+              ></span>
+            </div>
+            <div style="flex: 1">
+              <span id="singer"
+                >Cantor
+                <span
+                  class="bi bi-arrow-down-up"
+                  id="arrow_singer"
+                  style="font-size: larger"
+                ></span
+              ></span>
+            </div>
           </li>
           {% for audio in songs_list %}
           <li
             id="{{audio.id}}"
             class="audio_lista{{ audio.id }} d-flex flex-row list-group-item"
+            data-target="audio_lista"
           >
             <span id="audio_song{{ audio.id }}" style="flex: 3">
               {{ audio.title }}
@@ -40,13 +66,23 @@ content %}
               src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
               data-info="{{ audio.title }}|{{ audio.author }}|{{audio.thumb}}"
             ></audio>
-            <button type="button" class="delete_audio close">
+            <button
+              type="button"
+              class="music_button close"
+              data-target="{{audio.id}}"
+            >
               <span
                 aria-hidden="true"
-                class="bi bi-trash"
+                class="bi bi-three-dots-vertical"
                 style="color: white"
               ></span>
             </button>
+            <div class="music_options">
+              <ul>
+                <li>Editar</li>
+                <li class="delete_audio">Excluir</li>
+              </ul>
+            </div>
           </li>
           {% endfor %}
         </ul>
@@ -121,7 +157,14 @@ content %}
       class="volume d-flex justify-content-end align-items-center flex-grow-1"
     >
       <i id="vol-icon" class="bi bi-volume-up-fill"></i>
-      <input id="volume" type="range" min="0" max="100" step="1" value="100" />
+      <input
+        id="volume"
+        type="range"
+        min="0"
+        max="100"
+        step="0.01"
+        value="100"
+      />
     </div>
     <input
       id="progressbar"

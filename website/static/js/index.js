@@ -9,7 +9,7 @@ if (!window.location.href.includes("cantores")) {
 var buttons = document.getElementsByClassName("delete_audio");
 
 for (let i = 0; i < buttons.length; i++) {
-  const id = buttons[i].parentElement.id;
+  const id = buttons[i].parentElement.parentElement.parentElement.id;
   buttons[i].addEventListener("click", () => {
     deleteAudio(id);
   });
@@ -20,7 +20,6 @@ function deleteAudio(audioId) {
     method: "POST",
     body: JSON.stringify({ audioId: audioId }),
   }).then((_res) => {
-    console.log(audioId);
     rmAudio = document.querySelector(".audio_lista" + audioId);
     rmAudio.remove();
     var quantidade_musicas = document
@@ -29,6 +28,7 @@ function deleteAudio(audioId) {
     if (quantidade_musicas == 1) {
       document.getElementById("controls").style.display = "none";
     }
+    window.update_music_list();
   });
 }
 
@@ -73,14 +73,13 @@ function addMusic(url, titulo, cantor, playlist) {
       return response.json();
     })
     .then((data) => {
-      console.log("Musica Adicionada");
-      console.log(data);
       if ("added_before" in data) {
         if (data["added_before"] == "YES") {
-          console.log("Já adicionado");
+          console.log("Música já adicionada");
           return "";
         }
       }
+      window.update_music_list();
       // Seleciona o elemento onde o novo elemento será adicionado
       var music_list = document.getElementById("musics");
       // Cria um novo elemento
@@ -93,6 +92,7 @@ function addMusic(url, titulo, cantor, playlist) {
         "flex-row",
         "list-group-item"
       );
+      new_song.dataset.target = "audio_lista";
 
       // Define o conteúdo HTML da div
       new_song.innerHTML = `
@@ -108,12 +108,23 @@ function addMusic(url, titulo, cantor, playlist) {
       src="../static/users/${data["user_id"]}/songs/${data["nome_na_pasta"]}"
       data-info="${data["title"]}|${data["author"]}|${data["thumb"]}"
     ></audio>
-    <button type="button" class="delete_audio close">
-    <span
-    aria-hidden="true"
-    class="bi bi-trash"
-    style="color: white"></span>
-            </button>`;
+    <button
+       type="button"
+       class="music_button close"
+       data-target="{{audio.id}}"
+     >
+       <span
+         aria-hidden="true"
+         class="bi bi-three-dots-vertical"
+         style="color: white"
+       ></span>
+     </button>
+     <div class="music_options">
+       <ul>
+         <li>Editar</li>
+         <li class="delete_audio">Excluir</li>
+       </ul>
+     </div>`;
 
       music_list.appendChild(new_song);
       var songs = document.getElementsByClassName("songs");
@@ -147,8 +158,8 @@ function addData(url, titulo, cantor) {
             for (let i = 0; i < urlsString.length; i++) {
               console.log(urlsString[i]);
               addMusic(urlsString[i], "", "", "YES");
-              console.log("adicionei");
             }
+            console.log("adicionei");
           } else {
             alert("erro ao adicionar músicas");
           }
@@ -181,4 +192,15 @@ window.addEventListener("click", (ev) => {
       menu.style.display = "none";
     }
   }
+});
+
+// Adiciona um event listener para o botão de opções
+var optionsButtons = document.querySelectorAll(".music_button");
+optionsButtons.forEach(function (optionsButton) {
+  optionsButton.addEventListener("click", function () {
+    // Mostra ou esconde o menu de opções
+    var optionsMenu = this.parentNode.querySelector(".music_options");
+    optionsMenu.style.display =
+      optionsMenu.style.display === "block" ? "none" : "block";
+  });
 });

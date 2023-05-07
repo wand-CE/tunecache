@@ -1,21 +1,30 @@
 const controls = document.querySelector("#controls");
 
-var songs = document.getElementsByClassName("songs");
-var idSongs = [];
+var songs;
+var idSongs;
+
+update_music_list();
 
 let button_playpause = document.getElementById("play-control");
 let index = 0;
 let currentMusicId;
 let tituloAtual;
 
-for (var i = 0; i < songs.length; i++) {
-  songs[i].addEventListener("ended", onMusicEnd);
+function update_music_list() {
+  songs = document.getElementsByClassName("songs");
+  idSongs = [];
+
+  Array.from(songs).forEach((song) => {
+    idSongs.push(song.id);
+  });
+
+  for (var i = 0; i < songs.length; i++) {
+    songs[i].addEventListener("ended", onMusicEnd);
+  }
 }
 
-for (let i = 0; i < songs.length; i++) {
-  idSongs.push(songs[i].id);
-}
 window.idSongs;
+window.songs;
 
 const progressbar = document.getElementById("progressbar");
 const volumebar = document.getElementById("volume");
@@ -70,6 +79,14 @@ function updateDataMusic() {
         updateDataMusic();
         currentMusicId.play();
       });
+      mediaSession.setActionHandler("seekbackward", function () {
+        currentMusicId.currentTime -= 5;
+      });
+
+      mediaSession.setActionHandler("seekforward", function () {
+        currentMusicId.currentTime += 5;
+      });
+
       mediaSession.setActionHandler("stop", function () {
         if (!currentMusicId.paused) {
           currentMusicId.pause();
@@ -243,18 +260,14 @@ function secondsToMinutes(time) {
   return `${("0" + minutes).slice(-2)}:${("0" + seconds).slice(-2)}`;
 }
 
-function shuffle_musics(list_songs) {
-  for (let i = list_songs.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [list_songs[i], list_songs[j]] = [list_songs[j], list_songs[i]];
-  }
-  return list_songs;
-}
-
-let listas = document.getElementsByTagName("li");
+let items = document.querySelector("#musics");
+let listas = Array.from(items.children);
 for (const lista of listas) {
   lista.addEventListener("click", (ev) => {
-    if (ev.target.className != "bi bi-trash") {
+    if (
+      ev.target.className != "bi bi-three-dots-vertical" &&
+      !ev.target.closest(".music_options")
+    ) {
       if (lista.id != "") {
         new_index = Array.from(idSongs).indexOf(`song${lista.id}`);
         if (index != new_index) {
@@ -275,5 +288,105 @@ for (const lista of listas) {
   });
 }
 
+let arrow_title = document.getElementById("arrow_title");
+let arrow_singer = document.getElementById("arrow_singer");
+
+function shuffle_musics() {
+  let lista_musicas = document.querySelector("#musics");
+
+  arrow_title.className = "bi bi-arrow-down-up";
+  arrow_singer.className = "bi bi-arrow-down-up";
+
+  itens_lista = Array.from(lista_musicas.children);
+  titulo_cantor = itens_lista[0];
+  itens_lista.splice(0, 1);
+
+  itens_lista.sort(function () {
+    return 0.5 - Math.random();
+  });
+
+  lista_musicas.appendChild(titulo_cantor);
+  itens_lista.forEach(function (item) {
+    lista_musicas.appendChild(item);
+  });
+
+  update_music_list();
+
+  index = Array.from(idSongs).indexOf(currentMusicId.id);
+}
+
+let sort_by_title = document.getElementById("title");
+let title_click = 0;
+
+let sort_by_singer = document.getElementById("singer");
+let singer_click = 0;
+
+sort_by_title.addEventListener("click", () => {
+  title_click++;
+  sort_musics(title_click, "title");
+});
+
+sort_by_singer.addEventListener("click", () => {
+  singer_click++;
+  sort_musics(singer_click, "singer");
+});
+
+function sort_musics(click, name_of_event) {
+  let lista_musicas = document.querySelector("#musics");
+  let itens_lista = Array.from(lista_musicas.children);
+  titulo_cantor = itens_lista[0];
+  itens_lista.splice(0, 1);
+  if (name_of_event == "title") {
+    let arrow_title = document.getElementById("arrow_title");
+    if (click % 2 != 0) {
+      itens_lista.sort((a, b) => {
+        return a.childNodes[1].innerText.localeCompare(
+          b.childNodes[1].innerText
+        );
+      });
+      arrow_title.className = "bi bi-sort-alpha-down";
+    } else {
+      itens_lista.sort((b, a) => {
+        return a.childNodes[1].innerText.localeCompare(
+          b.childNodes[1].innerText
+        );
+      });
+      arrow_title.className = "bi bi-sort-alpha-up";
+    }
+    arrow_singer.className = "bi bi-arrow-down-up";
+  } else if (name_of_event == "singer") {
+    if (click % 2 != 0) {
+      itens_lista.sort((a, b) => {
+        return a.childNodes[3].innerText.localeCompare(
+          b.childNodes[3].innerText
+        );
+      });
+      arrow_singer.className = "bi bi-sort-alpha-down";
+    } else {
+      itens_lista.sort((b, a) => {
+        return a.childNodes[3].innerText.localeCompare(
+          b.childNodes[3].innerText
+        );
+      });
+      arrow_singer.className = "bi bi-sort-alpha-up";
+    }
+    arrow_title.className = "bi bi-arrow-down-up";
+  }
+
+  lista_musicas.appendChild(titulo_cantor);
+  itens_lista.forEach(function (item) {
+    lista_musicas.appendChild(item);
+  });
+
+  update_music_list();
+
+  index = Array.from(idSongs).indexOf(currentMusicId.id);
+}
+
+let shuffle_button = document.getElementById("shuffle_musics");
+
+shuffle_button.addEventListener("click", shuffle_musics);
+
+window.update_music_list = update_music_list;
 window.onMusicEnd = onMusicEnd;
 window.updateDataMusic = updateDataMusic;

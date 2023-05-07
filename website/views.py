@@ -11,12 +11,7 @@ from . import db
 
 views = Blueprint('views', __name__)
 
-@views.route('/')
-@login_required
-def home():
-    return render_template('home.html', user=current_user)
-
-@views.route('/allsongs', methods=['GET', 'POST'])
+@views.route('/', methods=['GET', 'POST'])
 @login_required
 def all_songs():
     return render_template('view_songs.html',

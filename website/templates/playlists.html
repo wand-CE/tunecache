@@ -16,10 +16,7 @@ block title %}Playlists{% endblock %} {% block content %}
     <div class="col-md-3 mb-3">
       <a href="/playlists/{{ playlist.titulo }}" class="text-light">
         <div class="card bg-dark text-light">
-          <img
-            src="https://via.placeholder.com/350x150"
-            class="card-img-top h-100"
-          />
+          <img src="{{playlist.audios[0].thumb}}" class="card-img-top h-100" />
           <h5 class="card-title ml-3">
             {{playlist.titulo}}
             <a class="text-light">

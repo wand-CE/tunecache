@@ -1,4 +1,4 @@
-ul#musics li {
+ul#musics li[data-target="audio_lista"] {
   width: 900px;
   cursor: pointer;
   background-color: #232327;
@@ -155,7 +155,7 @@ footer {
 }
 
 @media (max-width: 900px) {
-  ul#musics li {
+  ul#musics li[data-target="audio_lista"] {
     width: 100%;
   }
 
@@ -227,4 +227,48 @@ footer {
   #menu li {
     width: 100%;
   }
+}
+
+#shuffle_musics {
+  cursor: pointer;
+}
+
+.music_options {
+  position: absolute;
+  width: 100px;
+  display: none;
+  border: 1px solid gray;
+  background-color: white;
+  box-shadow: 2px 2px 5px gray;
+  padding: 0 7px 0 7px;
+  top: 85%;
+  right: 0;
+  z-index: 9999;
+}
+
+.music_options ul {
+  color: black;
+  background-color: white;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.music_options li {
+  margin-bottom: 5px;
+}
+
+.music_options li:last-child {
+  margin-bottom: 0;
+}
+
+.music_options a {
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.music_button {
+  position: relative;
+  border: none;
+  cursor: pointer;
 }
