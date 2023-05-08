@@ -35,7 +35,7 @@ function updateDataMusic() {
   const textCurrentDuration = document.getElementById("current-duration");
   const textTotalDuration = document.getElementById("total-duration");
 
-  tituloAtual = document.getElementById("audio_" + currentMusicId.id);
+  tituloAtual = document.getElementById("title_" + currentMusicId.id);
 
   document.getElementById("musica_atual").innerHTML = tituloAtual.textContent;
   progressbar.max = currentMusicId.duration;
@@ -266,11 +266,11 @@ for (const lista of listas) {
 }
 
 function play_on_click_li(ev, lista) {
-  console.log(ev.target.closest(".music_options"));
-  console.log(ev.target);
   if (
     ev.target.className != "bi bi-three-dots-vertical" &&
-    !ev.target.closest(".music_options")
+    !ev.target.closest(".music_options") &&
+    !ev.target.closest(".check_change") &&
+    ev.target.contentEditable !== "true"
   ) {
     if (lista.id != "") {
       new_index = Array.from(idSongs).indexOf(`song${lista.id}`);
@@ -393,3 +393,4 @@ shuffle_button.addEventListener("click", shuffle_musics);
 window.update_music_list = update_music_list;
 window.onMusicEnd = onMusicEnd;
 window.updateDataMusic = updateDataMusic;
+window.play_on_click_li = play_on_click_li;

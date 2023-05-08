@@ -6,18 +6,21 @@ if (!window.location.href.includes("cantores")) {
   document.getElementById("add_musicas").style.removeProperty("display");
 }
 
-var buttons = document.getElementsByClassName("delete_audio");
+function addeventListener_delete() {
+  var buttons_delete = document.getElementsByClassName("delete_audio");
 
-for (let i = 0; i < buttons.length; i++) {
-  const id = buttons[i].parentElement.parentElement.parentElement.id;
-  buttons[i].addEventListener("click", () => {
-    deleteAudio(id);
-  });
+  for (let i = 0; i < buttons_delete.length; i++) {
+    const id = buttons_delete[i].parentElement.parentElement.parentElement.id;
+    buttons_delete[i].addEventListener("click", () => {
+      deleteAudio(id);
+    });
+  }
 }
+addeventListener_delete();
 
 function deleteAudio(audioId) {
-  fetch("/delete-audio", {
-    method: "POST",
+  fetch("/delete-music", {
+    method: "DELETE",
     body: JSON.stringify({ audioId: audioId }),
   }).then((_res) => {
     rmAudio = document.querySelector(".audio_lista" + audioId);
@@ -32,21 +35,28 @@ function deleteAudio(audioId) {
   });
 }
 
-function editAudio(audioId) {
-  fetch("/edit-audio", {
-    method: "POST",
-    body: JSON.stringify({ audioId: audioId }),
-  }).then((_res) => {
-    rmAudio = document.querySelector(".audio_lista" + audioId);
-    rmAudio.remove();
-    var quantidade_musicas = document
-      .getElementById("musics")
-      .getElementsByTagName("li").length;
-    if (quantidade_musicas == 1) {
-      document.getElementById("controls").style.display = "none";
-    }
-    window.update_music_list();
-  });
+function editAudio(audioId, old_singer, old_title) {
+  singerName = document.getElementById(`author_song${audioId}`).innerText;
+  musicName = document.getElementById(`title_song${audioId}`).innerText;
+
+  if (singerName.trim().length == 0 || musicName.trim().length == 0) {
+    document.getElementById(`title_song${audioId}`).innerText = old_title;
+    document.getElementById(`author_song${audioId}`).innerText = old_singer;
+    alert("Música Não Editada");
+  } else {
+    fetch("/edit-music", {
+      method: "PUT",
+      body: JSON.stringify({
+        musicId: audioId,
+        singerName: singerName,
+        musicName: musicName,
+      }),
+    })
+      .then((_res) => {
+        return _res.json();
+      })
+      .then((data) => {});
+  }
 }
 
 function addPlaylist(playlistTitle) {
@@ -96,7 +106,6 @@ function addMusic(url, titulo, cantor, playlist) {
           return "";
         }
       }
-      window.update_music_list();
       // Seleciona o elemento onde o novo elemento será adicionado
       var music_list = document.getElementById("musics");
       // Cria um novo elemento
@@ -113,10 +122,13 @@ function addMusic(url, titulo, cantor, playlist) {
 
       // Define o conteúdo HTML da div
       new_song.innerHTML = `
-      <span id="audio_song${data["id"]}" style="flex: 3">
+      <span id="title_song${data["id"]}" style="flex: 3">
       ${data["title"]}
       </span>
-    <span class="autor" style="margin-left: 50px; flex: 1">
+      <span
+      id="author_song${data["id"]}"
+      style="margin-left: 50px; flex: 1"
+    >
       ${data["author"]}
     </span>
     <audio
@@ -128,7 +140,7 @@ function addMusic(url, titulo, cantor, playlist) {
     <button
        type="button"
        class="music_button close"
-       data-target="{{audio.id}}"
+       data-target="${data["id"]}"
      >
        <span
          aria-hidden="true"
@@ -137,12 +149,11 @@ function addMusic(url, titulo, cantor, playlist) {
        ></span>
      </button>
      <div class="music_options">
-       <ul>
-         <li>Editar</li>
-         <li class="delete_audio">Excluir</li>
-       </ul>
-     </div>`;
-
+         <ul>
+           <li class="edit_audio">Editar</li>
+           <li class="delete_audio">Excluir</li>
+         </ul>
+    </div>`;
       music_list.appendChild(new_song);
       var songs = document.getElementsByClassName("songs");
       songs[songs.length - 1].addEventListener("ended", window.onMusicEnd);
@@ -150,6 +161,16 @@ function addMusic(url, titulo, cantor, playlist) {
       window.idSongs.push(last_id_audio);
       window.verify_songs();
       document.getElementById("controls").style.display = "flex";
+      window.update_music_list();
+      document
+        .querySelector(`[data-target="${data["id"]}"]`)
+        .addEventListener("click", add_optionsButtons);
+
+      addeventListener_delete();
+
+      new_song.addEventListener("click", (ev) => {
+        play_on_click_li(ev, new_song);
+      });
     })
     .catch((error) => {
       console.error(error);
@@ -171,12 +192,9 @@ function addData(url, titulo, cantor) {
         .then((data) => {
           if ("urls" in data) {
             const urlsString = data.urls;
-            console.log(urlsString);
             for (let i = 0; i < urlsString.length; i++) {
-              console.log(urlsString[i]);
               addMusic(urlsString[i], "", "", "YES");
             }
-            console.log("adicionei");
           } else {
             alert("erro ao adicionar músicas");
           }
@@ -209,27 +227,32 @@ window.addEventListener("click", (ev) => {
       menu.style.display = "none";
     }
   }
-  /*
-  console.log(ev.target.className);
+
   if (ev.target.className != "bi bi-three-dots-vertical") {
-    music_options = querySelectorAll("")
+    music_options = document.getElementsByClassName("music_options");
+    for (music in music_options) {
+      if (music == "length") {
+        break;
+      }
+      music_options[music].style.display = "none";
+    }
   }
-  */
 });
 
-// Adiciona um event listener para o botão de opções
+function add_optionsButtons() {
+  var optionsMenu = this.parentNode.querySelector(".music_options");
+  optionsMenu.style.display =
+    optionsMenu.style.display === "block" ? "none" : "block";
+}
+
 var optionsButtons = document.querySelectorAll(".music_button");
 optionsButtons.forEach(function (optionsButton) {
-  optionsButton.addEventListener("click", function () {
-    // Mostra ou esconde o menu de opções
-    var optionsMenu = this.parentNode.querySelector(".music_options");
-    optionsMenu.style.display =
-      optionsMenu.style.display === "block" ? "none" : "block";
-  });
+  optionsButton.addEventListener("click", add_optionsButtons);
 });
-/*
+
 function focusEnd(element) {
   element.contentEditable = true;
+  element.style.cursor = "context-menu";
   element.innerText += " ";
   element.focus();
 
@@ -242,9 +265,64 @@ function focusEnd(element) {
   selection.addRange(range);
 }
 
-const button = document.getElementById("button");
-button.addEventListener("click", () => {
-  const elemento = document.getElementById("meuElemento");
-  focusEnd(elemento);
-});
+function addeventListener_edit() {
+  var buttons_edit = document.getElementsByClassName("edit_audio");
+
+  for (let i = 0; i < buttons_edit.length; i++) {
+    buttons_edit[i].addEventListener("click", (ev) => {
+      const elementExists = document.querySelector(".check_change");
+
+      if (!elementExists) {
+        const title = document.getElementById(
+          `title_song${ev.target.dataset.target}`
+        );
+        const singer = document.getElementById(
+          `author_song${ev.target.dataset.target}`
+        );
+        title.style.backgroundColor = "#474444";
+        singer.style.backgroundColor = "#474444";
+
+        let id = ev.target.dataset.target;
+
+        // seleciona o elemento pai do botão
+        const buttonParent = document.getElementById(`${id}`);
+
+        // cria o novo elemento
+        const newElement = document.createElement("button");
+
+        newElement.className = "close check_change text-success";
+        newElement.style.marginLeft = "5px";
+        newElement.innerHTML = `<span aria-hidden="true" class="bi bi-check-square-fill"></span>`;
+
+        buttonParent.insertBefore(newElement, buttonParent.childNodes[7]);
+
+        const old_singer_name = singer.innerText;
+        const old_title_name = title.innerText;
+
+        newElement.addEventListener("click", () => {
+          editAudio(id, old_singer_name, old_title_name);
+          newElement.remove();
+          singer.removeAttribute("contentEditable");
+          singer.style.backgroundColor = "";
+
+          title.removeAttribute("contentEditable");
+          title.style.backgroundColor = "";
+        });
+
+        focusEnd(singer);
+        focusEnd(title);
+      }
+    });
+  }
+}
+addeventListener_edit();
+
+/*
+<button type="button" class="music_button close">
+<span
+  aria-hidden="true"
+  class="bi bi-check-square-fill"
+  style="color: white"
+></span>
+</button>
 */

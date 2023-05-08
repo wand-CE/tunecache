@@ -57,7 +57,8 @@ def view_singers(singer_title):
                            songs_list=current_singer.audios)
 
 
-@views.route('/delete-audio', methods=['POST'])
+@views.route('/delete-music', methods=['DELETE'])
+@login_required
 def delete_audio():
     audio = json.loads(request.data)
     audioId = audio['audioId']
@@ -77,6 +78,7 @@ def delete_audio():
 
 
 @views.route('/add-playlist', methods=['POST'])
+@login_required
 def add_playlist():
     playlist_data = json.loads(request.data)
     if 'url' in playlist_data:
@@ -111,6 +113,7 @@ def add_playlist():
 
 
 @views.route('/add-music', methods=['POST'])
+@login_required
 def add_music():
     music_request = json.loads(request.data)
     url = music_request['music_url']
@@ -121,14 +124,23 @@ def add_music():
         atempt = 0
         while try_again:
             try:
-                audio = yt.streams.get_audio_only()
+                audio = yt.streams.get_by_itag(140)
+                tamanho_em_bytes = audio.filesize_approx
+                print(tamanho_em_bytes)
+                if (tamanho_em_bytes/ 1000000) > 10:
+                    return jsonify({}), 413
+                                    
                 filename = f'{(audio.title).replace(" ","_")}.mp3'
                 
-                filename = re.sub(r'[^\w\-_.]', '', filename)
-
-                audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/').replace(" ", "_"),
-                                filename=filename)
-
+                filename = re.sub(r'[^\w\-_.]', '', filename)               
+                
+                print(filename)
+                if os.path.exists(f'./website/static/users/{str(current_user.id)}/songs/{filename}'):
+                    filename = f'{filename}1'
+                print(filename)
+                audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/'),
+                               filename=filename)
+                print(audio)
 
                 titulo = music_request['titulo']
 
@@ -180,8 +192,16 @@ def add_music():
     return jsonify({'added_before': 'YES'})
 
 
-
-
+@views.route('/edit-music', methods=['PUT'])
+@login_required
+def edit_music():
+    music_request = json.loads(request.data)    
+    audio = db.session.query(Audio).filter_by(id=music_request['musicId']).first()
+    audio.title = music_request['musicName']
+    audio.author = music_request['singerName']
+    
+    db.session.commit()    
+    return (['Música Editada'])
 
 @views.errorhandler(404)
 def page_not_found(e):
