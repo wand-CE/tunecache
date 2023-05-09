@@ -1,3 +1,7 @@
+"""
+Wanderson Soares dos Santos - UTF-8 - 11-04-2023
+Model for the database of my site
+"""
 from flask_login import UserMixin
 from . import db
 
@@ -10,6 +14,7 @@ singer_audios = db.Table('singer_audios',
     db.Column('singer', db.Integer, db.ForeignKey('singer.id')))
 
 class Audio(db.Model):
+    """Model of table for the Audios"""
     id = db.Column(db.Integer, primary_key=True)
     video_id = db.Column(db.String(30))# trocar para audio_id depois
     title = db.Column(db.String(50))
@@ -21,7 +26,8 @@ class Audio(db.Model):
     singers = db.relationship('Singer', backref='audios', secondary=singer_audios)
 
 
-class Playlist_personal(db.Model):
+class PlaylistPersonal(db.Model):
+    """Model of table for the playlists"""
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(150))
     url_capa = db.Column(db.String(150))
@@ -29,12 +35,14 @@ class Playlist_personal(db.Model):
 
 
 class Singer(db.Model):
+    """Model of table for the Singers"""
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 
 class User(db.Model, UserMixin):
+    """Model of table for the Users"""
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(150))

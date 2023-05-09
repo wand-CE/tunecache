@@ -1,7 +1,12 @@
+"""
+Wanderson Soares dos Santos - UTF-8 - 11-04-2023
+Module responsible for the return of pages and the treatment
+of the data from the users
+"""
 import json
 import os
 import re
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
 from .pytube import YouTube, Playlist
 from .models import Audio, Playlist_personal, Singer
@@ -14,6 +19,7 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def all_songs():
+    """function responsible for the main page of the website"""
     return render_template('view_songs.html',
                            user=current_user,
                            playlist_title='Todas as músicas',
@@ -25,11 +31,13 @@ def all_songs():
 @views.route('/playlists', methods=['GET', 'POST'])
 @login_required
 def playlists():
+    """function responsible for the playlists collection page of the website"""
     return render_template('playlists.html', user=current_user)
 
 @views.route('playlists/<playlist_title>', methods=['GET', 'POST'])
 @login_required
-def view_songs(playlist_title):
+def playlists_songs(playlist_title):
+    """function responsible for the individual page of the playlists"""
     current_playlist = Playlist_personal.query.filter_by(titulo=playlist_title).first()
     if current_playlist is None:
         return render_template('404.html'), 404
@@ -42,11 +50,13 @@ def view_songs(playlist_title):
 @views.route('/cantores', methods=['GET', 'POST'])
 @login_required
 def singers():
+    """function responsible for the singers collection page of the website"""
     return render_template('singers.html', user=current_user)
 
 @views.route('cantores/<singer_title>', methods=['GET', 'POST'])
 @login_required
 def view_singers(singer_title):
+    """function responsible for the individual page of the singers"""
     current_singer = Singer.query.filter_by(name=singer_title).first()
     if current_singer is None:
         return render_template('404.html'), 404
@@ -60,6 +70,7 @@ def view_singers(singer_title):
 @views.route('/delete-music', methods=['DELETE'])
 @login_required
 def delete_audio():
+    """function responsible for delete the audios from the website"""
     audio = json.loads(request.data)
     audioId = audio['audioId']
     audio = Audio.query.get(audioId)
@@ -80,6 +91,7 @@ def delete_audio():
 @views.route('/add-playlist', methods=['POST'])
 @login_required
 def add_playlist():
+    """function responsible for add the playlists in the website"""
     playlist_data = json.loads(request.data)
     if 'url' in playlist_data:
         playlist_youtube = Playlist(playlist_data['url'])
@@ -115,6 +127,7 @@ def add_playlist():
 @views.route('/add-music', methods=['POST'])
 @login_required
 def add_music():
+    """function responsible for add the audios in the website"""
     music_request = json.loads(request.data)
     url = music_request['music_url']
     yt = YouTube(url)
@@ -129,17 +142,16 @@ def add_music():
                 print(tamanho_em_bytes)
                 if (tamanho_em_bytes/ 1000000) > 10:
                     return jsonify({}), 413
-                                    
+
                 filename = f'{(audio.title).replace(" ","_")}.mp3'
-                
-                filename = re.sub(r'[^\w\-_.]', '', filename)               
-                
-                print(filename)
+
+                filename = re.sub(r'[^\w\-_.]', '', filename)
+
                 if os.path.exists(f'./website/static/users/{str(current_user.id)}/songs/{filename}'):
                     filename = f'{filename}1'
                 print(filename)
-                audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/'),
-                               filename=filename)
+                audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/')
+                               ,filename=filename)
                 print(audio)
 
                 titulo = music_request['titulo']
@@ -163,10 +175,9 @@ def add_music():
                 if current_singer is None:
                     current_singer = Singer(user_id=current_user.id,
                                             name=cantor)
-                    db.session.add(current_singer)                    
-                    
+                    db.session.add(current_singer)
                 current_singer.audios.append(new_audio)
-                    
+
                 if music_request['playlist'] == 'YES':
                     current_playlist = Playlist_personal.query.order_by(Playlist_personal.id.desc()).first()
                     current_playlist.audios.append(new_audio)
@@ -185,7 +196,7 @@ def add_music():
                     })
             except:
                 atempt += 1
-                if atempt == 200:                        
+                if atempt == 200:
                     try_again = False
                     return jsonify({}), 500
 
@@ -195,14 +206,16 @@ def add_music():
 @views.route('/edit-music', methods=['PUT'])
 @login_required
 def edit_music():
-    music_request = json.loads(request.data)    
+    """function responsible for editing the music data in the website"""
+    music_request = json.loads(request.data)
     audio = db.session.query(Audio).filter_by(id=music_request['musicId']).first()
     audio.title = music_request['musicName']
     audio.author = music_request['singerName']
-    
-    db.session.commit()    
-    return (['Música Editada'])
+
+    db.session.commit()
+    return ['Música Editada']
 
 @views.errorhandler(404)
-def page_not_found(e):
+def page_not_found():
+    """function that returns the 404 page error"""
     return render_template('404.html'), 404

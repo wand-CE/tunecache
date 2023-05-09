@@ -1,10 +1,14 @@
+"""
+Wanderson Soares dos Santos - UTF-8 - 11-04-2023
+Configs for the auth system of my site
+"""
 import os
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
 from flask_login import (login_user, login_required,
                          logout_user, current_user)
-from random import shuffle
+from . import db
+
 from .models import User
 
 
@@ -13,10 +17,11 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """Function responsible for the login page"""
     if current_user.is_authenticated:
-            flash('Voce já está logado.', category='error')
-            return redirect(url_for('views.home'))
-    elif request.method == 'POST':        
+        flash('Voce já está logado.', category='error')
+        return redirect(url_for('views.all_songs'))
+    elif request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
 
@@ -36,15 +41,17 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
+    """Function logout of the site"""
     logout_user()
     return redirect(url_for('auth.login'))
 
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+    """Function responsible for the sign-up page"""
     if current_user.is_authenticated:
-            flash('Voce já está logado.', category='error')
-            return redirect(url_for('views.all_songs'))
+        flash('Voce já está logado.', category='error')
+        return redirect(url_for('views.all_songs'))
     elif request.method == 'POST':
         email = request.form.get('email')
         first_name = request.form.get('firstName')
