@@ -150,7 +150,7 @@ footer {
 #menu a:hover {
   background-color: #eee;
 }
-#menu input {
+#menu input[type="text"] {
   width: 570px;
 }
 
@@ -220,7 +220,7 @@ footer {
     width: 100%;
   }
 
-  #menu input {
+  #menu input[type="text"] {
     width: 100%;
   }
 
