@@ -91,7 +91,25 @@ content %}
   </div>
   <div id="menu" style="display: none" class="bg-dark">
     <div>
-      <h5>Adicionar Música</h5>
+      <div class="playlists">
+        <h5>Adicionar Música de:</h5>
+        <input
+          type="radio"
+          name="database_url"
+          id="from_url"
+          class="ml-5"
+          checked
+        />
+        <label for="from_url">URL</label>
+
+        <input
+          type="radio"
+          name="database_url"
+          id="from_database"
+          class="ml-5"
+        />
+        <label for="from_database">Playlists</label>
+      </div>
       <ul>
         <li>
           <label for="url">URL:</label>

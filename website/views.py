@@ -8,8 +8,9 @@ import os
 import re
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
+from sqlalchemy import func
 from .pytube import YouTube, Playlist
-from .models import Audio, Playlist_personal, Singer
+from .models import Audio, Personal_playlist, Singer
 from . import db
 
 
@@ -38,7 +39,7 @@ def playlists():
 @login_required
 def playlists_songs(playlist_title):
     """function responsible for the individual page of the playlists"""
-    current_playlist = Playlist_personal.query.filter_by(titulo=playlist_title).first()
+    current_playlist = Personal_playlist.query.filter_by(titulo=playlist_title).first()
     if current_playlist is None:
         return render_template('404.html'), 404
 
@@ -98,9 +99,9 @@ def add_playlist():
         playlist_title = playlist_youtube.title
     else:
         playlist_title = playlist_data['playlistTitle']
-    playlist = Playlist_personal.query.filter_by(titulo=playlist_title).first()
+    playlist = Personal_playlist.query.filter_by(titulo=func.lower(playlist_title)).first()
     if playlist is None:
-        new_playlist = Playlist_personal(titulo=playlist_title, user_id=current_user.id)
+        new_playlist = Personal_playlist(titulo=playlist_title, user_id=current_user.id)
         db.session.add(new_playlist)
         db.session.commit()
 
@@ -139,7 +140,7 @@ def add_music():
             try:
                 audio = yt.streams.get_by_itag(140)
                 tamanho_em_bytes = audio.filesize_approx
-                print(tamanho_em_bytes)
+
                 if (tamanho_em_bytes/ 1000000) > 10:
                     return jsonify({}), 413
 
@@ -149,10 +150,9 @@ def add_music():
 
                 if os.path.exists(f'./website/static/users/{str(current_user.id)}/songs/{filename}'):
                     filename = f'{filename}1'
-                print(filename)
+
                 audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/')
                                ,filename=filename)
-                print(audio)
 
                 titulo = music_request['titulo']
 
@@ -179,7 +179,7 @@ def add_music():
                 current_singer.audios.append(new_audio)
 
                 if music_request['playlist'] == 'YES':
-                    current_playlist = Playlist_personal.query.order_by(Playlist_personal.id.desc()).first()
+                    current_playlist = Personal_playlist.query.order_by(Personal_playlist.id.desc()).first()
                     current_playlist.audios.append(new_audio)
 
                 db.session.commit()
