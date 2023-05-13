@@ -46,6 +46,7 @@ def playlists_songs(playlist_title):
     return render_template('view_songs.html',
                            user=current_user,
                            playlist_title = playlist_title,
+                           playlist_id = current_playlist.id,
                            songs_list=current_playlist.audios)
 
 @views.route('/cantores', methods=['GET', 'POST'])
@@ -219,3 +220,21 @@ def edit_music():
 def page_not_found():
     """function that returns the 404 page error"""
     return render_template('404.html'), 404
+
+
+
+@views.route('/update_list_songs_playlist', methods=['PUT'])
+@login_required
+def edit_list_playlist():
+    data = json.loads(request.data)
+    list_request = data[0]
+
+    current_playlist = Personal_playlist.query.filter_by(id=data[1]).first()
+
+    for audios_id in list_request:
+        audio = Audio.query.filter_by(id=int(audios_id)).first()
+        current_playlist.audios.append(audio)
+
+    db.session.commit()
+
+    return ['Playlist Editada']

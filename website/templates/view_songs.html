@@ -5,7 +5,11 @@ content %}
 <div class="container-fluid mb-5">
   <div class="row mb-5">
     <div class="col mb-5">
-      <h4 align="center" class="mt-4">
+      <h4
+        align="center"
+        class="mt-4 titulo_playlist"
+        data-value="{{ playlist_id }}"
+      >
         {{playlist_title}}
         <i
           id="add_musicas"
@@ -93,24 +97,27 @@ content %}
     <div>
       <div class="playlists">
         <h5>Adicionar Música de:</h5>
+        {% if playlist_title != 'Todas as músicas' %}
         <input
           type="radio"
           name="database_url"
           id="from_url"
+          value="from_url"
           class="ml-5"
           checked
         />
         <label for="from_url">URL</label>
-
         <input
           type="radio"
           name="database_url"
           id="from_database"
+          value="from_database"
           class="ml-5"
         />
         <label for="from_database">Playlists</label>
+        {% endif %}
       </div>
-      <ul>
+      <ul class="data_from_url">
         <li>
           <label for="url">URL:</label>
           <input
@@ -151,6 +158,24 @@ content %}
           Adicionar
         </button>
       </ul>
+      {% if playlist_title != 'Todas as músicas' %}
+      <div class="data_from_database" style="display: none">
+        <div class="list-group scrollable">
+          {% for audio in user.audios if audio not in songs_list %}
+          <label class="list-group-item bg-dark">
+            <input type="checkbox" value="{{ audio.id }}" /> {{audio.title}}
+          </label>
+          {% endfor %}
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          id="add_music_from_database"
+        >
+          Adicionar
+        </button>
+      </div>
+      {% endif %}
     </div>
   </div>
   <section id="controls" class="flex-row" style="display: none">
@@ -194,5 +219,25 @@ content %}
     />
   </section>
 </div>
+<style>
+  .scrollable {
+    max-height: 150px; /* Define a altura máxima da lista */
+    overflow-y: scroll; /* Adiciona a barra de rolagem vertical */
+  }
+
+  /* Define a aparência da barra de rolagem */
+  .scrollable::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scrollable::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+  .scrollable::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+</style>
 <script src="../static/js/player.js"></script>
 {% endblock %}

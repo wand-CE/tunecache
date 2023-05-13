@@ -326,3 +326,55 @@ addeventListener_edit();
 ></span>
 </button>
 */
+
+/* = document.querySelector(
+  'input[name="database_url"]:checked'
+).value;
+*/
+var select_elements = document.querySelector(".playlists").children;
+
+for (let i = 0; i < select_elements.length; i++) {
+  select_elements[i].addEventListener("click", (ev) => {
+    if (ev.target.id == "from_url") {
+      document.getElementsByClassName("data_from_url")[0].style.display =
+        "block";
+      document.getElementsByClassName("data_from_database")[0].style.display =
+        "none";
+    } else if (ev.target.id == "from_database") {
+      document.getElementsByClassName("data_from_database")[0].style.display =
+        "block";
+      document.getElementsByClassName("data_from_url")[0].style.display =
+        "none";
+    }
+  });
+}
+
+function update_playlist_songs_list(list_songs, currentPlaylist) {
+  fetch("/update_list_songs_playlist", {
+    method: "PUT",
+    body: JSON.stringify([list_songs, currentPlaylist]),
+  })
+    .then((response) => {
+      console.log("caguei");
+      return response.json();
+    })
+    .then((data) => {
+      console.log(data[0]);
+    });
+}
+
+document
+  .getElementById("add_music_from_database")
+  .addEventListener("click", () => {
+    var div_database = document.querySelector(".data_from_database");
+    var audios = div_database.querySelectorAll(
+      'input[type="checkbox"]:checked'
+    );
+    var list_songs = [];
+    var currentPlaylist = document.querySelector(".titulo_playlist");
+
+    for (let i = 0; i < audios.length; i++) {
+      list_songs.push(audios[i].value);
+    }
+    update_playlist_songs_list(list_songs, currentPlaylist.dataset.value);
+  });
