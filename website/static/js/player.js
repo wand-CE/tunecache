@@ -257,7 +257,7 @@ function secondsToMinutes(time) {
   return `${("0" + minutes).slice(-2)}:${("0" + seconds).slice(-2)}`;
 }
 
-let items = document.querySelector("#musics");
+let items = document.querySelector("#sortable");
 let listas = Array.from(items.children);
 for (const lista of listas) {
   lista.addEventListener("click", (ev) => {
@@ -295,20 +295,17 @@ let arrow_title = document.getElementById("arrow_title");
 let arrow_singer = document.getElementById("arrow_singer");
 
 function shuffle_musics() {
-  let lista_musicas = document.querySelector("#musics");
+  let lista_musicas = document.querySelector("#sortable");
 
   arrow_title.className = "bi bi-arrow-down-up";
   arrow_singer.className = "bi bi-arrow-down-up";
 
   itens_lista = Array.from(lista_musicas.children);
-  titulo_cantor = itens_lista[0];
-  itens_lista.splice(0, 1);
 
   itens_lista.sort(function () {
     return 0.5 - Math.random();
   });
 
-  lista_musicas.appendChild(titulo_cantor);
   itens_lista.forEach(function (item) {
     lista_musicas.appendChild(item);
   });
@@ -335,10 +332,8 @@ sort_by_singer.addEventListener("click", () => {
 });
 
 function sort_musics(click, name_of_event) {
-  let lista_musicas = document.querySelector("#musics");
+  let lista_musicas = document.querySelector("#sortable");
   let itens_lista = Array.from(lista_musicas.children);
-  titulo_cantor = itens_lista[0];
-  itens_lista.splice(0, 1);
   if (name_of_event == "title") {
     let arrow_title = document.getElementById("arrow_title");
     if (click % 2 != 0) {
@@ -376,7 +371,6 @@ function sort_musics(click, name_of_event) {
     arrow_title.className = "bi bi-arrow-down-up";
   }
 
-  lista_musicas.appendChild(titulo_cantor);
   itens_lista.forEach(function (item) {
     lista_musicas.appendChild(item);
   });
@@ -394,3 +388,17 @@ window.update_music_list = update_music_list;
 window.onMusicEnd = onMusicEnd;
 window.updateDataMusic = updateDataMusic;
 window.play_on_click_li = play_on_click_li;
+
+function configureSortable() {
+  $("#sortable").sortable({
+    update: function () {
+      update_music_list();
+      index = Array.from(idSongs).indexOf(currentMusicId.id);
+    },
+  });
+  $("#sortable").disableSelection();
+}
+
+$(document).ready(function () {
+  configureSortable();
+});

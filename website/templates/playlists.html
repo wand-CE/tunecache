@@ -4,7 +4,7 @@ block title %}Playlists{% endblock %} {% block content %}
 
 <div class="container">
   <h1 class="mt-5 d-flex">Minhas Playlists</h1>
-  <button class="btn btn-light my-3" onclick="menu()">
+  <button class="btn btn-light my-3" id="btn_add_playlist">
     <img
       src="https://cdn-icons-png.flaticon.com/512/565/565264.png"
       alt="Ícone de Adicionar Playlist"
@@ -17,24 +17,28 @@ block title %}Playlists{% endblock %} {% block content %}
       <a href="/playlists/{{ playlist.titulo }}" class="text-light">
         <div class="card bg-dark text-light">
           <img src="{{playlist.audios[0].thumb}}" class="card-img-top h-100" />
-          <h5 class="card-title ml-3">
+          <h5 class="card-title ml-3" id="{{playlist.id}}">
             {{playlist.titulo}}
-            <a class="text-light">
+            <a class="text-light float-right">
               <span
-                class="bi bi-three-dots-vertical float-right"
-                onclick="menu()"
+                class="bi bi-three-dots-vertical"
+                id="edit_playlist_name"
+                data-value="{{playlist.id}}"
                 style="cursor: pointer"
               ></span>
-              <div id="menu" style="display: none">
-                <li>Excluir Playlist</li>
-              </div>
             </a>
           </h5>
         </div>
       </a>
+      <div class="playlist_options">
+        <ul>
+          <li class="edit_playlist" data-target="">Editar</li>
+          <li class="delete_playlist">Excluir</li>
+        </ul>
+      </div>
     </div>
     {% endfor%}
-    <div id="menu" class="col-md-3 mb-3" style="display: none">
+    <div id="new_playlist" class="col-md-3 mb-3" style="display: none">
       <div class="card bg-dark text-light">
         <img
           src="https://via.placeholder.com/350x150"
@@ -56,4 +60,7 @@ block title %}Playlists{% endblock %} {% block content %}
 </div>
 <style></style>
 
+{% endblock %} {% block scripts %}
+
+<script src="../static/js/playlists_page.js"></script>
 {% endblock %}

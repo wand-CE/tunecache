@@ -52,43 +52,45 @@ content %}
               ></span>
             </div>
           </li>
-          {% for audio in songs_list %}
-          <li
-            id="{{audio.id}}"
-            class="audio_lista{{ audio.id }} d-flex flex-row list-group-item"
-            data-target="audio_lista"
-          >
-            <span id="title_song{{ audio.id }}" style="flex: 3">
-              {{ audio.title }}
-            </span>
-            <span
-              id="author_song{{ audio.id }}"
-              style="margin-left: 50px; flex: 1"
+          <span id="sortable">
+            {% for audio in songs_list %}
+            <li
+              id="{{audio.id}}"
+              class="ui-state-default audio_lista{{ audio.id }} d-flex flex-row list-group-item "
+              data-target="audio_lista"
             >
-              {{ audio.author }}
-            </span>
-            <audio
-              id="song{{ audio.id }}"
-              class="songs"
-              src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
-              data-info="{{ audio.title }}|{{ audio.author }}|{{audio.thumb}}"
-            ></audio>
-            <button type="button" class="music_button close">
+              <span id="title_song{{ audio.id }}" style="flex: 3">
+                {{ audio.title }}
+              </span>
               <span
-                aria-hidden="true"
-                class="bi bi-three-dots-vertical"
-                style="color: white"
-              ></span>
-            </button>
+                id="author_song{{ audio.id }}"
+                style="margin-left: 50px; flex: 1"
+              >
+                {{ audio.author }}
+              </span>
+              <audio
+                id="song{{ audio.id }}"
+                class="songs"
+                src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
+                data-info="{{ audio.title }}|{{ audio.author }}|{{audio.thumb}}"
+              ></audio>
+              <button type="button" class="music_button close">
+                <span
+                  aria-hidden="true"
+                  class="bi bi-three-dots-vertical"
+                  style="color: white"
+                ></span>
+              </button>
 
-            <div class="music_options">
-              <ul>
-                <li class="edit_audio" data-target="{{audio.id}}">Editar</li>
-                <li class="delete_audio">Excluir</li>
-              </ul>
-            </div>
-          </li>
-          {% endfor %}
+              <div class="music_options">
+                <ul>
+                  <li class="edit_audio" data-target="{{audio.id}}">Editar</li>
+                  <li class="delete_audio">Excluir</li>
+                </ul>
+              </div>
+            </li>
+            {% endfor %}
+          </span>
         </ul>
       </div>
     </div>
@@ -239,5 +241,7 @@ content %}
     background: #888;
   }
 </style>
+{% endblock %} {% block scripts %}
+
 <script src="../static/js/player.js"></script>
 {% endblock %}

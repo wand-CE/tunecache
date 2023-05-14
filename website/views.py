@@ -9,7 +9,7 @@ import re
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from .pytube import YouTube, Playlist
+from pytube import YouTube, Playlist
 from .models import Audio, Personal_playlist, Singer
 from . import db
 
@@ -32,7 +32,7 @@ def all_songs():
 @views.route('/playlists', methods=['GET', 'POST'])
 @login_required
 def playlists():
-    """function responsible for the playlists collection page of the website"""
+    """function responsible for the playlists collection page of the website"""        
     return render_template('playlists.html', user=current_user)
 
 @views.route('playlists/<playlist_title>', methods=['GET', 'POST'])
@@ -238,3 +238,12 @@ def edit_list_playlist():
     db.session.commit()
 
     return ['Playlist Editada']
+
+
+@views.route("/edit-playlist-title", methods=['PUT'])
+@login_required
+def edit_playlist_title():
+    playlist_id = json.loads(request.data)
+    print(playlist_id)
+
+    return ('Nome editado')

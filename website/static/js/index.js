@@ -363,18 +363,20 @@ function update_playlist_songs_list(list_songs, currentPlaylist) {
     });
 }
 
-document
-  .getElementById("add_music_from_database")
-  .addEventListener("click", () => {
-    var div_database = document.querySelector(".data_from_database");
-    var audios = div_database.querySelectorAll(
-      'input[type="checkbox"]:checked'
-    );
-    var list_songs = [];
-    var currentPlaylist = document.querySelector(".titulo_playlist");
+if (document.getElementById("add_music_from_database")) {
+  document
+    .getElementById("add_music_from_database")
+    .addEventListener("click", () => {
+      var div_database = document.querySelector(".data_from_database");
+      var audios = div_database.querySelectorAll(
+        'input[type="checkbox"]:checked'
+      );
+      var list_songs = [];
+      var currentPlaylist = document.querySelector(".titulo_playlist");
 
-    for (let i = 0; i < audios.length; i++) {
-      list_songs.push(audios[i].value);
-    }
-    update_playlist_songs_list(list_songs, currentPlaylist.dataset.value);
-  });
+      for (let i = 0; i < audios.length; i++) {
+        list_songs.push(audios[i].value);
+      }
+      update_playlist_songs_list(list_songs, currentPlaylist.dataset.value);
+    });
+}
