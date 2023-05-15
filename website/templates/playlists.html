@@ -16,45 +16,41 @@ block title %}Playlists{% endblock %} {% block content %}
     <div class="col-md-3 mb-3">
       <a href="/playlists/{{ playlist.titulo }}" class="text-light">
         <div class="card bg-dark text-light">
-          <img src="{{playlist.audios[0].thumb}}" class="card-img-top h-100" />
-          <h5 class="card-title ml-3" id="{{playlist.id}}">
-            {{playlist.titulo}}
-            <a class="text-light float-right">
-              <span
-                class="bi bi-three-dots-vertical"
-                id="edit_playlist_name"
-                data-value="{{playlist.id}}"
-                style="cursor: pointer"
-              ></span>
+          {% if playlist.audios|length > 0 %}
+          <img src="{{playlist.audios[0].thumb}}" class="card-img-top" />
+          {% else %}
+          <img src="https://via.placeholder.com/350x350" class="card-img-top" />
+          {% endif %}
+          <h5 class="card-title my-2">
+            <span id="{{playlist.id}}" class="px-1"> {{playlist.titulo}} </span>
+            <a
+              class="bi bi-three-dots-vertical text-light float-right edit_playlist_name"
+              data-value="{{playlist.id}}"
+              style="cursor: pointer"
+            >
             </a>
           </h5>
         </div>
       </a>
       <div class="playlist_options">
         <ul>
-          <li class="edit_playlist" data-target="">Editar</li>
+          <li class="edit_playlist">Editar</li>
           <li class="delete_playlist">Excluir</li>
         </ul>
       </div>
     </div>
     {% endfor%}
-    <div id="new_playlist" class="col-md-3 mb-3" style="display: none">
-      <div class="card bg-dark text-light">
-        <img
-          src="https://via.placeholder.com/350x150"
-          class="card-img-top h-100"
-        />
-        <h5 class="card-title ml-3">
-          <input
-            type="text"
-            id="new_playlist_title"
-            placeholder="Insira o Titulo da playlist"
-          />
-        </h5>
-      </div>
-      <button
-        onclick="addPlaylist(document.getElementById('new_playlist_title').value)"
-      ></button>
+    <div id="menu" style="display: none">
+      <label for="new_playlist_title">Nome da Playlist:</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Nome da playlist"
+        id="new_playlist_title"
+      />
+      <button class="btn btn-outline-success mt-3 add_playlist">
+        Adicionar
+      </button>
     </div>
   </div>
 </div>

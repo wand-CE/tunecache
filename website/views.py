@@ -31,7 +31,12 @@ def all_songs():
 
 @views.route('/playlists', methods=['GET', 'POST'])
 @login_required
-def playlists():
+def playlists():    
+    '''
+    db.session.delete(current_user.playlists[1])
+    db.session.commit()
+    '''
+        
     """function responsible for the playlists collection page of the website"""        
     return render_template('playlists.html', user=current_user)
 
