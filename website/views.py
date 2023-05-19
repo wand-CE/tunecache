@@ -177,12 +177,18 @@ def add_music():
                                   thumb=yt.thumbnail_url)
                 db.session.add(new_audio)
 
-                current_singer = Singer.query.filter_by(name=cantor).first()
-                if current_singer is None:
-                    current_singer = Singer(user_id=current_user.id,
-                                            name=cantor)
-                    db.session.add(current_singer)
-                current_singer.audios.append(new_audio)
+
+                cantor = cantor.replace('&',',').split(',')
+
+                for i in cantor:
+                    i = i.strip()
+                    if bool(i):
+                        current_singer = Singer.query.filter_by(name=i).first()
+                        if current_singer is None:
+                            current_singer = Singer(user_id=current_user.id,
+                                                    name=i)
+                            db.session.add(current_singer)
+                        current_singer.audios.append(new_audio)
 
                 if music_request['playlist'] == 'YES':
                     current_playlist = Personal_playlist.query.order_by(Personal_playlist.id.desc()).first()
