@@ -15,26 +15,36 @@ block title %}Playlists{% endblock %} {% block content %}
     {% for playlist in user.playlists %}
     <div class="col-md-3 mb-3">
       <a href="/playlists/{{ playlist.titulo }}" class="text-light">
-        <div class="card bg-dark text-light">
+        <div class="card bg-dark">
           {% if playlist.audios|length > 0 %}
           <img src="{{playlist.audios[0].thumb}}" class="card-img-top" />
           {% else %}
           <img src="https://via.placeholder.com/350x350" class="card-img-top" />
           {% endif %}
           <h5 class="card-title my-2">
-            <span id="{{playlist.id}}" class="px-1"> {{playlist.titulo}} </span>
-            <a
-              class="bi bi-three-dots-vertical text-light float-right edit_playlist_name"
-              data-value="{{playlist.id}}"
-              style="cursor: pointer"
+            <span
+              id="{{playlist.id}}"
+              class="pl-1"
+              style="
+                display: inline-block;
+                max-width: 90%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
             >
-            </a>
+              {{playlist.titulo}}
+            </span>
+            <a
+              class="bi bi-three-dots-vertical float-right edit_playlist_name"
+              style="display: inline-block; cursor: pointer"
+              data-value="{{playlist.id}}"
+            ></a>
           </h5>
         </div>
       </a>
       <div class="playlist_options">
         <ul>
-          <li class="edit_playlist">Editar</li>
+          <li class="rename_playlist">Renomear</li>
           <li class="delete_playlist">Excluir</li>
         </ul>
       </div>
@@ -57,6 +67,5 @@ block title %}Playlists{% endblock %} {% block content %}
 <style></style>
 
 {% endblock %} {% block scripts %}
-
-<script src="../static/js/playlists_page.js"></script>
+<script src="../static/js/playlists_page.js" type="module"></script>
 {% endblock %}

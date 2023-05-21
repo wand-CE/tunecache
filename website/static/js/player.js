@@ -1,16 +1,18 @@
+if (!window.location.href.includes("cantores/")) {
+  document.getElementById("add_musicas").style.removeProperty("display");
+}
+
 const controls = document.querySelector("#controls");
 
 var songs;
 var idSongs;
-
-update_music_list();
 
 let button_playpause = document.getElementById("play-control");
 let index = 0;
 let currentMusicId;
 let tituloAtual;
 
-function update_music_list() {
+export function update_music_list() {
   songs = document.getElementsByClassName("songs");
   idSongs = [];
 
@@ -23,8 +25,7 @@ function update_music_list() {
   }
 }
 
-window.idSongs;
-window.songs;
+update_music_list();
 
 const progressbar = document.getElementById("progressbar");
 const volumebar = document.getElementById("volume");
@@ -164,7 +165,7 @@ volumebar.addEventListener("touchmove", function (event) {
   }
 });
 
-function verify_songs() {
+export function verify_songs() {
   if (idSongs.length > 0) {
     updateDataMusic();
     document.getElementById("controls").style.display = "flex";
@@ -174,8 +175,6 @@ function verify_songs() {
 }
 
 verify_songs();
-
-window.verify_songs = verify_songs;
 
 controls.addEventListener("click", function (ev) {
   if (idSongs.length > 0) {
@@ -239,7 +238,7 @@ controls.addEventListener("click", function (ev) {
   }
 });
 
-function onMusicEnd() {
+export function onMusicEnd() {
   index++;
   if (index == idSongs.length) {
     index = 0;
@@ -402,3 +401,6 @@ function configureSortable() {
 $(document).ready(function () {
   configureSortable();
 });
+
+export { songs };
+export { idSongs };

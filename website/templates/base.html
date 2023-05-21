@@ -105,10 +105,11 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"></script>
-    <script
-      type="text/javascript"
-      src="{{ url_for('static', filename='js/index.js')}}"
-    ></script>
+    <script type="text/javascript">
+      if (window.history.replaceState) {
+        window.history.replaceState(null, null, window.location.href);
+      }
+    </script>
     {% block scripts %} {% endblock %}
   </body>
 </html>

@@ -258,3 +258,18 @@ def edit_playlist_title():
     print(playlist_id)
 
     return ('Nome editado')
+
+
+@views.route('delete-playlist', methods=['DELETE'])
+@login_required
+def delete_playlist():
+    playlist_id = int(json.loads(request.data))
+
+    playlist = Personal_playlist.query.get(playlist_id)
+    print(playlist)
+
+    db.session.delete(playlist)
+    db.session.commit()
+
+    return ['Playlist Excluída']
+    

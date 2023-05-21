@@ -1,54 +1,9 @@
-function editPlaylist(id, new_title) {
-  fetch("/edit-playlist-title", {
-    method: "PUT",
-    body: JSON.stringify([id, new_title]),
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      console.log(data);
-    });
-}
-
-function addPlaylist(playlistTitle) {
-  fetch("/add-playlist", {
-    method: "POST",
-    body: JSON.stringify({ playlistTitle: playlistTitle }),
-  }).then((_res) => {
-    // Seleciona o elemento onde o novo elemento será adicionado
-    var playlist_list = document.getElementById("playlist_list");
-    // Cria um novo elemento
-    const new_playlist = document.createElement("div");
-    new_playlist.classList.add("col-md-3", "mb-3");
-
-    // Define o conteúdo HTML da div
-    new_playlist.innerHTML = `
-      <a href="/playlists/${playlistTitle}">
-        <div class="card bg-dark text-light">
-          <img src="https://via.placeholder.com/350x150" class="card-img-top h-100" />
-          <h5 class="card-title ml-3">${playlistTitle}</h5>
-        </div>
-      </a>
-    `;
-    playlist_list.appendChild(new_playlist);
-  });
-}
-
-function focusEnd(element) {
-  element.contentEditable = true;
-  element.style.cursor = "context-menu";
-  element.innerText += " ";
-  element.focus();
-
-  const range = document.createRange();
-  range.selectNodeContents(element);
-  range.collapse(false);
-
-  const selection = window.getSelection();
-  selection.removeAllRanges();
-  selection.addRange(range);
-}
+import {
+  addPlaylist,
+  editPlaylist,
+  deletePlaylist,
+} from "./modules/conf_playlists.js";
+import { focusEnd } from "./modules/main_conf.js";
 
 document.getElementById("btn_add_playlist").addEventListener("click", () => {
   var menu = document.getElementById("menu");
@@ -66,25 +21,32 @@ document.querySelector(".add_playlist").addEventListener("click", () => {
   playlist_title.value = "";
 });
 
-document.querySelectorAll(".edit_playlist_name").forEach((item) => {
-  item.addEventListener("click", () => {
-    var optionsMenu =
-      item.parentElement.parentElement.parentElement.querySelector(
-        ".playlist_options"
-      );
+const container = document.getElementById("playlist_list");
+
+container.addEventListener("click", (event) => {
+  if (event.target.classList.contains("edit_playlist_name")) {
+    const elementoPai = event.target.parentElement.parentElement.parentElement;
+    const optionsMenu = elementoPai.querySelector(".playlist_options");
+    const editarPlaylist = elementoPai.querySelector(".rename_playlist");
+    const excluirPlaylist = elementoPai.querySelector(".delete_playlist");
+
+    editarPlaylist.addEventListener("click", () => {
+      var play_title = document.getElementById(event.target.dataset.value);
+      focusEnd(play_title);
+      optionsMenu.style.display = "none";
+    });
+
+    excluirPlaylist.addEventListener("click", () => {
+      deletePlaylist(event.target.dataset.value);
+      document
+        .getElementById(event.target.dataset.value)
+        .closest(".col-md-3")
+        .remove();
+    });
+
     optionsMenu.style.display =
       optionsMenu.style.display === "block" ? "none" : "block";
-    /*
-    if (ev.target.className == "edit_playlist") {
-      console.log("caguei");
-    } else if (ev.target.className == "delete_playlist") {
-      console.log("preto");
-    }
-    var playlist_id = item.dataset.value;
-    var title = document.getElementById(`${playlist_id}`);
-    focusEnd(title);
-    console.log(title.innerText);
-    //editPlaylist(playlist_id);
-    */
-  });
+
+    // Restante do código
+  }
 });
