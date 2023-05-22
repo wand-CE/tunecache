@@ -12,7 +12,7 @@ content %}
       >
         {{playlist_title}}
         <i
-          id="add_musicas"
+          id="plus_circle_button"
           title="Adicionar Músicas"
           class="bi bi-plus-circle ml-5"
           style="font-size: 30px; display: none"
@@ -97,29 +97,31 @@ content %}
   </div>
   <div id="menu" style="display: none" class="bg-dark">
     <div>
-      <div class="playlists">
+      <div id="menu_to_add_musics">
         <h5>Adicionar Música de:</h5>
         {% if playlist_title != 'Todas as músicas' %}
-        <input
-          type="radio"
-          name="database_url"
-          id="from_url"
-          value="from_url"
-          class="ml-5"
-          checked
-        />
-        <label for="from_url">URL</label>
-        <input
-          type="radio"
-          name="database_url"
-          id="from_database"
-          value="from_database"
-          class="ml-5"
-        />
-        <label for="from_database">Playlists</label>
+
+        <label class="from_url">
+          <input
+            type="radio"
+            name="database_url"
+            value="from_url"
+            class="ml-5 from_url"
+            checked
+          />URL</label
+        >
+
+        <label class="from_database"
+          ><input
+            type="radio"
+            name="database_url"
+            value="from_database"
+            class="ml-5 from_database"
+          />Playlists</label
+        >
         {% endif %}
       </div>
-      <ul class="data_from_url">
+      <ul id="data_from_url">
         <li>
           <label for="url">URL:</label>
           <input
@@ -146,28 +148,23 @@ content %}
           <label for="autor">Autor:</label>
           <input
             type="text"
-            placeholder="Nome do cantor (pode deixar em branco se for playlist)"
+            placeholder="Nome do cantor (deixar em branco se for playlist)"
             class="form-control"
             id="autor"
             name="autor"
           />
         </li>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          onclick="addData(document.getElementById('url').value, document.getElementById('titulo').value, document.getElementById('autor').value)"
-        >
+        <button type="submit" id="add_music" class="btn btn-primary">
           Adicionar
         </button>
       </ul>
       {% if playlist_title != 'Todas as músicas' %}
-      <div class="data_from_database" style="display: none">
+      <div id="data_from_database" style="display: none">
+        {% for audio in user.audios if audio not in songs_list %}
         <div class="list-group scrollable">
-          {% for audio in user.audios if audio not in songs_list %}
           <label class="list-group-item bg-dark">
             <input type="checkbox" value="{{ audio.id }}" /> {{audio.title}}
           </label>
-          {% endfor %}
         </div>
         <button
           type="submit"
@@ -176,6 +173,7 @@ content %}
         >
           Adicionar
         </button>
+        {% endfor %}
       </div>
       {% endif %}
     </div>

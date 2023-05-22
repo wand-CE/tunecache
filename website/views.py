@@ -79,8 +79,11 @@ def view_singers(singer_title):
 def delete_audio():
     """function responsible for delete the audios from the website"""
     audio = json.loads(request.data)
+    print(audio)
     audioId = audio['audioId']
+    print(audioId)
     audio = Audio.query.get(audioId)
+    print(audio)
     if audio:
         if audio.user_id == current_user.id:
             db.session.delete(audio)
@@ -155,7 +158,7 @@ def add_music():
                 filename = re.sub(r'[^\w\-_.]', '', filename)
 
                 if os.path.exists(f'./website/static/users/{str(current_user.id)}/songs/{filename}'):
-                    filename = f'{filename}1'
+                    filename = f'1{filename}'
 
                 audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/')
                                ,filename=filename)
@@ -200,10 +203,10 @@ def add_music():
 
                 return jsonify({
                     "id" : audio.id,
-                    "author" : audio.author,
                     "title" : audio.title,
-                    "nome_na_pasta" : audio.nome_na_pasta,
+                    "author" : audio.author,                    
                     "user_id" : audio.user_id,
+                    "filename" : audio.nome_na_pasta,                    
                     "thumb": audio.thumb,
                     })
             except:
@@ -242,13 +245,16 @@ def edit_list_playlist():
 
     current_playlist = Personal_playlist.query.filter_by(id=data[1]).first()
 
+    musicas_adicionadas = []
     for audios_id in list_request:
         audio = Audio.query.filter_by(id=int(audios_id)).first()
         current_playlist.audios.append(audio)
-
+        musicas_adicionadas.append([audio.id, audio.title,
+                                    audio.author, current_user.id,
+                                    audio.nome_na_pasta, audio.thumb])
     db.session.commit()
 
-    return ['Playlist Editada']
+    return musicas_adicionadas
 
 
 @views.route("/edit-playlist-title", methods=['PUT'])

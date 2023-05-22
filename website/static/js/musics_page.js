@@ -1,11 +1,15 @@
 import {
   update_playlist_songs_list,
-  add_optionsButtons,
   deleteAudio,
   editAudio,
+  addData,
 } from "../js/modules/conf_musics.js";
 
 import { focusEnd } from "../js/modules/main_conf.js";
+
+if (!window.location.href.includes("cantores/")) {
+  document.getElementById("plus_circle_button").style.removeProperty("display");
+}
 
 var menu = document.getElementById("menu");
 
@@ -14,15 +18,9 @@ menu.querySelectorAll("*").forEach((elemento) => {
     event.stopPropagation();
   });
 });
-/*
-var optionsButtons = document.querySelectorAll(".music_button");
-optionsButtons.forEach(function (optionsButton) {
-  optionsButton.addEventListener("click", add_optionsButtons);
-});
-*/
 
 window.addEventListener("click", (ev) => {
-  if (ev.target.id == "add_musicas") {
+  if (ev.target.id == "plus_circle_button") {
     if (menu.style.display == "none") {
       menu.style.display = "flex";
     } else {
@@ -39,17 +37,18 @@ if (document.getElementById("add_music_from_database")) {
   document
     .getElementById("add_music_from_database")
     .addEventListener("click", () => {
-      var div_database = document.querySelector(".data_from_database");
+      var div_database = document.getElementById("data_from_database");
       var audios = div_database.querySelectorAll(
         'input[type="checkbox"]:checked'
       );
       var list_songs = [];
-      var currentPlaylist = document.querySelector(".titulo_playlist");
+      var currentPlaylistId =
+        document.querySelector(".titulo_playlist").dataset.value;
 
       for (let i = 0; i < audios.length; i++) {
         list_songs.push(audios[i].value);
       }
-      update_playlist_songs_list(list_songs, currentPlaylist.dataset.value);
+      update_playlist_songs_list(list_songs, currentPlaylistId);
     });
 }
 
@@ -112,4 +111,31 @@ container.addEventListener("click", (event) => {
 
     // Restante do código
   }
+});
+
+var btn_add_music = document.getElementById("add_music");
+
+btn_add_music.addEventListener("click", () => {
+  addData(
+    document.getElementById("url").value,
+    document.getElementById("titulo").value,
+    document.getElementById("autor").value
+  );
+});
+
+var menu_to_add_musics = document.getElementById("menu_to_add_musics");
+
+menu_to_add_musics.querySelectorAll("*").forEach((element) => {
+  element.addEventListener("click", () => {
+    var from_url = document.getElementById("data_from_url");
+    var from_database = document.getElementById("data_from_database");
+
+    if (element.classList.contains("from_url")) {
+      from_url.style.display = "block";
+      from_database.style.display = "none";
+    } else if (element.classList.contains("from_database")) {
+      from_database.style.display = "block";
+      from_url.style.display = "none";
+    }
+  });
 });

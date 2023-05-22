@@ -4,7 +4,8 @@ import {
   onMusicEnd,
   idSongs,
   songs,
-} from "../player.js";
+  play_on_click_li,
+} from "../modules/conf_player.js";
 
 export function deleteAudio(audioId) {
   fetch("/delete-music", {
@@ -23,8 +24,8 @@ export function deleteAudio(audioId) {
 }
 
 export function editAudio(audioId, old_singer, old_title) {
-  singerName = document.getElementById(`author_song${audioId}`).innerText;
-  musicName = document.getElementById(`title_song${audioId}`).innerText;
+  var singerName = document.getElementById(`author_song${audioId}`).innerText;
+  var musicName = document.getElementById(`title_song${audioId}`).innerText;
 
   if (singerName.trim().length == 0 || musicName.trim().length == 0) {
     document.getElementById(`title_song${audioId}`).innerText = old_title;
@@ -65,75 +66,21 @@ export function addMusic(url, titulo, cantor, playlist) {
     .then((data) => {
       if ("added_before" in data) {
         if (data["added_before"] == "YES") {
-          console.log("Música já adicionada");
+          if (playlist == "NO") {
+            alert(`Música já adicionada`);
+          }
           return "";
         }
       }
-      // Seleciona o elemento onde o novo elemento será adicionado
-      var music_list = document.getElementById("musics");
-      // Cria um novo elemento
-      const new_song = document.createElement("li");
 
-      new_song.id = `${data["id"]}`;
-      new_song.classList.add(
-        `audio_lista${data["id"]}`,
-        "d-flex",
-        "flex-row",
-        "list-group-item"
+      addMusic_onSortable(
+        data["id"],
+        data["title"],
+        data["author"],
+        data["user_id"],
+        data["filename"],
+        data["thumb"]
       );
-      new_song.dataset.target = "audio_lista";
-
-      // Define o conteúdo HTML da div
-      new_song.innerHTML = `
-        <span id="title_song${data["id"]}" style="flex: 3">
-        ${data["title"]}
-        </span>
-        <span
-        id="author_song${data["id"]}"
-        style="margin-left: 50px; flex: 1"
-      >
-        ${data["author"]}
-      </span>
-      <audio
-        id="song${data["id"]}"
-        class="songs"
-        src="../static/users/${data["user_id"]}/songs/${data["nome_na_pasta"]}"
-        data-info="${data["title"]}|${data["author"]}|${data["thumb"]}"
-      ></audio>
-      <button
-         type="button"
-         class="music_button close"
-         data-target="${data["id"]}"
-       >
-         <span
-           aria-hidden="true"
-           class="bi bi-three-dots-vertical"
-           style="color: white"
-         ></span>
-       </button>
-       <div class="music_options">
-           <ul>
-             <li class="edit_audio">Editar</li>
-             <li class="delete_audio">Excluir</li>
-           </ul>
-      </div>`;
-      music_list.appendChild(new_song);
-      var songs = document.getElementsByClassName("songs");
-      songs[songs.length - 1].addEventListener("ended", onMusicEnd);
-      let last_id_audio = songs[songs.length - 1].id;
-      idSongs.push(last_id_audio);
-      verify_songs();
-      document.getElementById("controls").style.display = "flex";
-      update_music_list();
-      document
-        .querySelector(`[data-target="${data["id"]}"]`)
-        .addEventListener("click", add_optionsButtons);
-
-      addeventListener_delete();
-
-      new_song.addEventListener("click", (ev) => {
-        play_on_click_li(ev, new_song);
-      });
     })
     .catch((error) => {
       console.error(error);
@@ -170,22 +117,93 @@ export function addData(url, titulo, cantor) {
   }
 }
 
-export function add_optionsButtons() {
-  var optionsMenu = this.parentNode.querySelector(".music_options");
-  optionsMenu.style.display =
-    optionsMenu.style.display === "block" ? "none" : "block";
-}
-
-export function update_playlist_songs_list(list_songs, currentPlaylist) {
+export function update_playlist_songs_list(list_songs, currentPlaylistId) {
   fetch("/update_list_songs_playlist", {
     method: "PUT",
-    body: JSON.stringify([list_songs, currentPlaylist]),
+    body: JSON.stringify([list_songs, currentPlaylistId]),
   })
     .then((response) => {
-      console.log("caguei");
       return response.json();
     })
     .then((data) => {
-      console.log(data[0]);
+      for (let i = 0; i < data.length; i++) {
+        addMusic_onSortable(
+          data[i][0],
+          data[i][1],
+          data[i][2],
+          data[i][3],
+          data[i][4],
+          data[i][5]
+        );
+      }
     });
+}
+
+export function addMusic_onSortable(
+  id,
+  title,
+  author,
+  user_id,
+  filename,
+  thumb
+) {
+  // Seleciona o elemento onde o novo elemento será adicionado
+  var music_list = document.getElementById("sortable");
+  // Cria um novo elemento
+  const new_song = document.createElement("li");
+
+  new_song.id = `${id}`;
+  new_song.classList.add(
+    `audio_lista${id}`,
+    "d-flex",
+    "flex-row",
+    "list-group-item"
+  );
+  new_song.dataset.target = "audio_lista";
+
+  // Define o conteúdo HTML da div
+  new_song.innerHTML = `
+        <span id="title_song${id}" style="flex: 3">
+        ${title}
+        </span>
+        <span
+        id="author_song${id}"
+        style="margin-left: 50px; flex: 1"
+      >
+        ${author}
+      </span>
+      <audio
+        id="song${id}"
+        class="songs"
+        src="../static/users/${user_id}/songs/${filename}"
+        data-info="${title}|${author}|${thumb}"
+      ></audio>
+      <button
+         type="button"
+         class="music_button close"
+       >
+         <span
+           aria-hidden="true"
+           class="bi bi-three-dots-vertical"
+           style="color: white"
+         ></span>
+       </button>
+       <div class="music_options">
+           <ul>
+             <li class="edit_audio" data-target="${id}">Editar</li>
+             <li class="delete_audio">Excluir</li>
+           </ul>
+      </div>`;
+  music_list.appendChild(new_song);
+  var songs = document.getElementsByClassName("songs");
+  songs[songs.length - 1].addEventListener("ended", onMusicEnd);
+  let last_id_audio = songs[songs.length - 1].id;
+  idSongs.push(last_id_audio);
+  verify_songs();
+  document.getElementById("controls").style.display = "flex";
+  update_music_list();
+
+  new_song.addEventListener("click", (ev) => {
+    play_on_click_li(ev, new_song);
+  });
 }
