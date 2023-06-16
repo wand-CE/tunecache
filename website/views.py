@@ -6,7 +6,7 @@ of the data from the users
 import json
 import os
 import re
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from pytube import YouTube, Playlist
@@ -31,22 +31,22 @@ def all_songs():
 
 @views.route('/playlists', methods=['GET', 'POST'])
 @login_required
-def playlists():    
+def playlists():
     '''
     db.session.delete(current_user.playlists[1])
     db.session.commit()
     '''
-        
+
     """function responsible for the playlists collection page of the website"""        
     return render_template('playlists.html', user=current_user)
 
-@views.route('playlists/<playlist_title>', methods=['GET', 'POST'])
+@views.route('/playlists/<playlist_title>', methods=['GET', 'POST'])
 @login_required
 def playlists_songs(playlist_title):
     """function responsible for the individual page of the playlists"""
     current_playlist = Personal_playlist.query.filter_by(titulo=playlist_title).first()
     if current_playlist is None:
-        return render_template('404.html'), 404
+        return page_not_found()
 
     return render_template('view_songs.html',
                            user=current_user,
@@ -60,18 +60,19 @@ def singers():
     """function responsible for the singers collection page of the website"""
     return render_template('singers.html', user=current_user)
 
-@views.route('cantores/<singer_title>', methods=['GET', 'POST'])
+@views.route('/cantores/<singer_title>', methods=['GET', 'POST'])
 @login_required
 def view_singers(singer_title):
     """function responsible for the individual page of the singers"""
     current_singer = Singer.query.filter_by(name=singer_title).first()
     if current_singer is None:
-        return render_template('404.html'), 404
+        return page_not_found()
 
     return render_template('view_songs.html',
                            user=current_user,
                            playlist_title = singer_title,
-                           songs_list=current_singer.audios)
+                           songs_list=current_singer.audios,
+                           singer = 'yes')
 
 
 @views.route('/delete-music', methods=['DELETE'])
@@ -79,11 +80,8 @@ def view_singers(singer_title):
 def delete_audio():
     """function responsible for delete the audios from the website"""
     audio = json.loads(request.data)
-    print(audio)
     audioId = audio['audioId']
-    print(audioId)
     audio = Audio.query.get(audioId)
-    print(audio)
     if audio:
         if audio.user_id == current_user.id:
             db.session.delete(audio)
@@ -113,6 +111,8 @@ def add_playlist():
         new_playlist = Personal_playlist(titulo=playlist_title, user_id=current_user.id)
         db.session.add(new_playlist)
         db.session.commit()
+
+        return jsonify([new_playlist.id])
 
     if 'url' in playlist_data:
         urls = playlist_youtube.video_urls
@@ -196,6 +196,9 @@ def add_music():
                 if music_request['playlist'] == 'YES':
                     current_playlist = Personal_playlist.query.order_by(Personal_playlist.id.desc()).first()
                     current_playlist.audios.append(new_audio)
+                elif music_request['playlist'] != 'NO':
+                    current_playlist = Personal_playlist.query.filter_by(titulo=music_request['playlist']).first()
+                    current_playlist.audios.append(new_audio)
 
                 db.session.commit()
 
@@ -225,16 +228,9 @@ def edit_music():
     music_request = json.loads(request.data)
     audio = db.session.query(Audio).filter_by(id=music_request['musicId']).first()
     audio.title = music_request['musicName']
-    audio.author = music_request['singerName']
 
     db.session.commit()
     return ['Música Editada']
-
-@views.errorhandler(404)
-def page_not_found():
-    """function that returns the 404 page error"""
-    return render_template('404.html'), 404
-
 
 
 @views.route('/update_list_songs_playlist', methods=['PUT'])
@@ -261,21 +257,44 @@ def edit_list_playlist():
 @login_required
 def edit_playlist_title():
     playlist_id = json.loads(request.data)
-    print(playlist_id)
 
     return ('Nome editado')
 
 
-@views.route('delete-playlist', methods=['DELETE'])
+@views.route('/delete-playlist', methods=['DELETE'])
 @login_required
 def delete_playlist():
     playlist_id = int(json.loads(request.data))
 
     playlist = Personal_playlist.query.get(playlist_id)
-    print(playlist)
 
     db.session.delete(playlist)
     db.session.commit()
 
     return ['Playlist Excluída']
-    
+
+
+@views.errorhandler(404)
+def page_not_found():
+    """function that returns the 404 page error"""    
+    return render_template('404.html', user=current_user), 404
+
+@views.route('/sw.js', methods=['GET'])
+@login_required
+def sw():
+    return current_app.send_static_file('js/sw.js')    
+
+
+@views.route('/user_id', methods=['GET'])
+@login_required
+def user_id():
+    return jsonify(str(current_user.id))
+
+@views.route('/listar-musicas')
+def listar_musicas():
+    pasta = f'static/users/{current_user.id}/songs'  # Substitua pelo caminho real da pasta desejada    
+
+    # Obtém a lista de arquivos na pasta
+    arquivos = os.listdir(pasta)
+
+    return jsonify(arquivos)

@@ -12,3 +12,11 @@ export function focusEnd(element) {
   selection.removeAllRanges();
   selection.addRange(range);
 }
+
+var isMobileDevice =
+  /Mobi/i.test(navigator.userAgent) ||
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+
+export { isMobileDevice };

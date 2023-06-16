@@ -1,15 +1,5 @@
-import {
-  update_playlist_songs_list,
-  deleteAudio,
-  editAudio,
-  addData,
-} from "../js/modules/conf_musics.js";
-
 import { focusEnd } from "../js/modules/main_conf.js";
-
-if (!window.location.href.includes("cantores/")) {
-  document.getElementById("plus_circle_button").style.removeProperty("display");
-}
+import { update_music_list, tocar, sound, init_player } from "../js/player.js";
 
 var menu = document.getElementById("menu");
 
@@ -21,35 +11,43 @@ menu.querySelectorAll("*").forEach((elemento) => {
 
 window.addEventListener("click", (ev) => {
   if (ev.target.id == "plus_circle_button") {
-    if (menu.style.display == "none") {
-      menu.style.display = "flex";
-    } else {
-      menu.style.display = "none";
-    }
+    menu.style.display = menu.style.display == "none" ? "flex" : "none";
   } else {
     if (ev.target.id != "menu") {
       menu.style.display = "none";
     }
   }
+
+  if (!ev.target.className.includes("bi-three-dots-vertical")) {
+    let options = document.querySelectorAll(".music_options");
+    options.forEach((item) => {
+      item.style.display = "none";
+    });
+  }
 });
 
-if (document.getElementById("add_music_from_database")) {
-  document
-    .getElementById("add_music_from_database")
-    .addEventListener("click", () => {
-      var div_database = document.getElementById("data_from_database");
-      var audios = div_database.querySelectorAll(
-        'input[type="checkbox"]:checked'
-      );
-      var list_songs = [];
-      var currentPlaylistId =
-        document.querySelector(".titulo_playlist").dataset.value;
+const add_music_from_database = document.getElementById(
+  "add_music_from_database"
+);
+if (add_music_from_database) {
+  add_music_from_database.addEventListener("click", () => {
+    document.getElementById("menu").style.display = "none";
+    var div_database = document.getElementById("data_from_database");
+    var audios = div_database.querySelectorAll(
+      'input[type="checkbox"]:checked'
+    );
+    var list_songs = [];
+    var currentPlaylistId =
+      document.querySelector(".titulo_playlist").dataset.value;
 
-      for (let i = 0; i < audios.length; i++) {
-        list_songs.push(audios[i].value);
-      }
-      update_playlist_songs_list(list_songs, currentPlaylistId);
+    for (let i = 0; i < audios.length; i++) {
+      list_songs.push(audios[i].value);
+    }
+    update_playlist_songs_list(list_songs, currentPlaylistId);
+    audios.forEach((addedSong) => {
+      addedSong.closest("div").remove();
     });
+  });
 }
 
 const container = document.getElementById("sortable");
@@ -71,33 +69,31 @@ container.addEventListener("click", (event) => {
       }
 
       const title = document.getElementById(`title_song${idAudio}`);
-      const singer = document.getElementById(`author_song${idAudio}`);
 
       title.style.backgroundColor = "#474444";
-      singer.style.backgroundColor = "#474444";
+      const buttonParent = document.getElementsByClassName(
+        `audio_lista${idAudio}`
+      )[0];
 
-      const buttonParent = document.getElementById(idAudio);
       const newElement = document.createElement("button");
       newElement.className = "close check_change text-success";
       newElement.style.marginLeft = "5px";
+      newElement.style.right = "90px";
+      newElement.style.position = "absolute";
+
       newElement.innerHTML = `<span aria-hidden="true" class="bi bi-check-square-fill"></span>`;
 
-      buttonParent.insertBefore(newElement, buttonParent.childNodes[7]);
+      buttonParent.insertBefore(newElement, buttonParent.children[4]);
 
-      const oldSingerName = singer.innerText;
       const oldTitleName = title.innerText;
 
       newElement.addEventListener("click", () => {
-        editAudio(idAudio, oldSingerName, oldTitleName);
+        editAudio(idAudio, oldTitleName);
         newElement.remove();
-        singer.removeAttribute("contentEditable");
-        singer.style.backgroundColor = "";
 
         title.removeAttribute("contentEditable");
         title.style.backgroundColor = "";
       });
-
-      focusEnd(singer);
       focusEnd(title);
     });
 
@@ -139,3 +135,228 @@ menu_to_add_musics.querySelectorAll("*").forEach((element) => {
     }
   });
 });
+
+export function deleteAudio(audioId) {
+  fetch("/delete-music", {
+    method: "DELETE",
+    body: JSON.stringify({ audioId: audioId }),
+  }).then((_res) => {
+    const element_li = document.getElementsByClassName(
+      `audio_lista${audioId}`
+    )[0];
+
+    const src = document.getElementById(`song${audioId}`).src;
+
+    let howl = Howler._howls;
+
+    for (let i = 0; i < howl.length; i++) {
+      if (howl[i]._src == src) {
+        if (howl[i] == sound) {
+          tocar();
+        }
+        howl[i].unload();
+        break;
+      }
+    }
+
+    element_li.remove();
+
+    update_music_list();
+
+    var quantidade_musicas =
+      document.getElementById("sortable").children.length;
+    if (quantidade_musicas < 1) {
+      document.getElementById("controls").style.display = "none";
+    }
+  });
+}
+
+export function editAudio(audioId, old_title) {
+  var musicName = document.getElementById(`title_song${audioId}`).innerText;
+
+  if (musicName.trim().length == 0) {
+    document.getElementById(`title_song${audioId}`).innerText = old_title;
+    alert("Música Não Editada");
+  } else {
+    fetch("/edit-music", {
+      method: "PUT",
+      body: JSON.stringify({
+        musicId: audioId,
+        musicName: musicName,
+      }),
+    })
+      .then((_res) => {
+        return _res.json();
+      })
+      .then((data) => {});
+  }
+}
+
+export function addMusic(url, titulo, cantor, playlist) {
+  fetch("/add-music", {
+    method: "POST",
+    body: JSON.stringify({
+      music_url: url,
+      titulo: titulo,
+      cantor: cantor,
+      playlist: playlist,
+    }),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Erro de Url");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if ("added_before" in data) {
+        if (data["added_before"] == "YES") {
+          if (playlist == "NO") {
+            alert(`Música já adicionada`);
+          }
+          return "";
+        }
+      }
+
+      addMusic_onSortable(
+        data["id"],
+        data["title"],
+        data["author"],
+        data["user_id"],
+        data["filename"],
+        data["thumb"]
+      );
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+export function addData(url, titulo, cantor) {
+  var menu = document.getElementById("menu");
+  menu.style.display = "none";
+  if (url.includes("youtube.com" || "youtu.be")) {
+    if (url.includes("playlist")) {
+      fetch("/add-playlist", {
+        method: "POST",
+        body: JSON.stringify({ url: url }),
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          if ("urls" in data) {
+            const urlsString = data.urls;
+            for (let i = 0; i < urlsString.length; i++) {
+              addMusic(urlsString[i], "", "", "YES");
+            }
+          } else {
+            alert("erro ao adicionar músicas");
+          }
+        });
+    } else {
+      if (window.location.href.includes("playlists")) {
+        var address_url = window.location.href.split("playlists/");
+        addMusic(url, titulo, cantor, address_url[1]);
+      } else {
+        addMusic(url, titulo, cantor, "NO");
+      }
+    }
+  } else {
+    alert("Link Inválido");
+  }
+}
+
+export function update_playlist_songs_list(list_songs, currentPlaylistId) {
+  fetch("/update_list_songs_playlist", {
+    method: "PUT",
+    body: JSON.stringify([list_songs, currentPlaylistId]),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      for (let i = 0; i < data.length; i++) {
+        addMusic_onSortable(
+          data[i][0],
+          data[i][1],
+          data[i][2],
+          data[i][3],
+          data[i][4],
+          data[i][5]
+        );
+      }
+    });
+}
+
+export function addMusic_onSortable(
+  id,
+  title,
+  author,
+  user_id,
+  filename,
+  thumb
+) {
+  // Seleciona o elemento onde o novo elemento será adicionado
+  var music_list = document.getElementById("sortable");
+  // Cria um novo elemento
+  const new_song = document.createElement("li");
+
+  new_song.classList.add(
+    `audio_lista${id}`,
+    "d-flex",
+    "flex-row",
+    "list-group-item"
+  );
+  new_song.dataset.target = "audio_lista";
+
+  // Define o conteúdo HTML da div
+  new_song.innerHTML = `
+              <span
+                class="bi bi-list handle"
+              >
+              </span>
+              <span class="ml-4 mr-3">
+                <img
+                  src="${thumb}"
+                  alt="${title}"
+                  height="40px"
+                  width="40px"
+                />
+              </span>
+              <span class="title_singer">
+                <span
+                  id="title_song${id}"
+                  class="title_songs"
+                >
+                ${title}
+                </span>
+                <br />
+                ${author}
+              </span>
+              </span>
+              <source
+                id="song${id}"
+                class="songs"
+                src="../static/users/${user_id}/songs/${filename}"
+                data-info="${title}|${author}|${thumb}"
+              />
+              <button type="button" class="music_button close" >
+                <span
+                  aria-hidden="true"
+                  class="bi bi-three-dots-vertical"
+                  style="color: white"
+                ></span>
+              </button>
+
+              <div class="music_options">
+                <ul>
+                  <li class="edit_audio" data-target="${id}">Editar</li>
+                  <li class="delete_audio">Excluir</li>
+                </ul>
+              </div>`;
+  music_list.appendChild(new_song);
+  update_music_list();
+  init_player();
+  document.getElementById("controls").style.display = "flex";
+}

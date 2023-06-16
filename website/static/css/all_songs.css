@@ -58,8 +58,6 @@ section#controls {
   bottom: 0;
   left: 0;
   width: 100%;
-
-  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -119,9 +117,16 @@ footer {
   #musica_atual {
     font-size: large;
   }
+
+  .div-musics {
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    display: flex !important;
+  }
 }
 
 #menu {
+  display: none;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -158,6 +163,9 @@ footer {
 }
 
 @media (max-width: 900px) {
+  ul#music {
+    width: 100%;
+  }
   ul#musics li[data-target="audio_lista"] {
     width: 100%;
   }
@@ -194,6 +202,7 @@ footer {
     left: 10px;
     position: absolute;
     bottom: 0;
+    padding-right: 50px;
   }
 
   .duration_music {
@@ -231,8 +240,28 @@ footer {
   #musica_atual {
     font-size: medium;
   }
-  #controls {
-    display: block;
+
+  .handle {
+    position: absolute;
+    left: 5px;
+  }
+
+  .music_button {
+    right: 0 !important;
+  }
+
+  .title_singer {
+    max-width: 130px !important;
+    overflow: hidden;
+    font-size: 10px !important;
+  }
+
+  .title_songs {
+    font-size: 15px !important;
+  }
+
+  .col {
+    padding: 0;
   }
 }
 
@@ -275,7 +304,8 @@ footer {
 }
 
 .music_button {
-  position: relative;
+  position: absolute;
+  right: 10px;
   border: none;
   cursor: pointer;
 }
@@ -289,11 +319,10 @@ footer {
 }
 
 .scrollable {
-  max-height: 150px; /* Define a altura máxima da lista */
-  overflow-y: scroll; /* Adiciona a barra de rolagem vertical */
+  max-height: 150px;
+  overflow-y: scroll;
 }
 
-/* Define a aparência da barra de rolagem */
 .scrollable::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -305,4 +334,87 @@ footer {
 
 .scrollable::-webkit-scrollbar-thumb {
   background: #888;
+}
+
+.handle {
+  cursor: move;
+  font-size: 25px;
+}
+
+.title_singer {
+  font-size: small;
+  max-width: 500px;
+}
+
+.title_songs {
+  font-size: large;
+}
+
+@keyframes wavy {
+  0% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.6);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+.playing {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  margin: -20px auto;
+  width: 45px;
+  height: 30px;
+  text-align: center;
+  font-size: 10px;
+  transition: all 0.2s ease;
+}
+.playing > div {
+  background-color: #fff;
+  height: 100%;
+  width: 6px;
+  display: inline-block;
+  transition: all 0.2s ease;
+  transform-origin: 50% 50%;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.33);
+}
+
+.rect2 {
+  animation-delay: 0.25s !important;
+}
+.rect3 {
+  animation-delay: 0.5s !important;
+}
+.rect4 {
+  animation-delay: 0.75s !important;
+}
+.rect5 {
+  animation-delay: 1s !important;
+}
+
+.paused {
+  animation: wavy 1s ease infinite forwards;
+}
+
+.bi {
+  color: white;
+}
+
+#data_from_database,
+#controls,
+#volume {
+  display: none;
+}
+
+#plus_circle_button,
+#shuffle_musics {
+  font-size: 30px;
+}
+
+.duration_music {
+  font-size: 12px;
 }

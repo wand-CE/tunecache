@@ -8,10 +8,11 @@
     <div class="col-md-3 mb-3">
       <a href="/cantores/{{ singer.name }}" class="text-light">
         <div class="card bg-dark text-light">
-          <img
-            src="https://via.placeholder.com/350x150"
-            class="card-img-top h-100"
-          />
+          {% if singer.audios|length > 0 %}
+          <img src="{{singer.audios[0].thumb}}" class="card-img-top" />
+          {% else %}
+          <img src="https://via.placeholder.com/350x350" class="card-img-top" />
+          {% endif %}
           <h5 class="card-title ml-3">
             {{singer.name}}
             <a class="text-light">

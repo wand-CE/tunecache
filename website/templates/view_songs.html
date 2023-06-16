@@ -16,20 +16,20 @@ content %}
         data-value="{{ playlist_id }}"
       >
         {{playlist_title}}
+        {% if singer == yes %}
         <i
           id="plus_circle_button"
           title="Adicionar Músicas"
           class="bi bi-plus-circle ml-5"
-          style="font-size: 30px; display: none"
         ></i>
+        {% endif %}
         <i
           id="shuffle_musics"
           title="ordem aleatória"
           class="bi bi-shuffle ml-5"
-          style="font-size: 30px"
         ></i>
       </h4>
-      <div class="d-flex flex-wrap justify-content-center">
+      <div class="div-musics">
         <ul class="list-group list-group-flush" id="musics">
           <li
             class="d-flex flex-row list-group-item"
@@ -46,32 +46,35 @@ content %}
                 ></span
               ></span>
             </div>
-            <div style="flex: 1">
-              <span id="singer"
-                >Cantor
-                <span
-                  class="bi bi-arrow-down-up"
-                  id="arrow_singer"
-                  style="font-size: larger"
-                ></span
-              ></span>
-            </div>
           </li>
           <span id="sortable">
             {% for audio in songs_list %}
             <li
-              id="{{audio.id}}"
-              class=" audio_lista{{ audio.id }} d-flex flex-row list-group-item "
+              class="audio_lista{{ audio.id }} d-flex flex-row list-group-item "
               data-target="audio_lista"
             >
-              <span id="title_song{{ audio.id }}" style="flex: 3">
-                {{ audio.title }}
-              </span>
               <span
-                id="author_song{{ audio.id }}"
-                style="margin-left: 50px; flex: 1"
+                class="bi bi-list handle"
               >
-                {{ audio.author }}
+              </span>
+              <span class="ml-4 mr-3">
+                <img
+                  src="{{audio.thumb}}"
+                  alt="{{audio.title}}"
+                  height="40px"
+                  width="40px"
+                />
+              </span>
+              <span class="title_singer">
+                <span
+                  id="title_song{{ audio.id }}"
+                  class="title_songs"
+                >
+                  {{ audio.title }}
+                </span>
+                <br />
+                {{ audio.author }}                
+              </span>
               </span>
               <source
                 id="song{{ audio.id }}"
@@ -79,11 +82,10 @@ content %}
                 src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
                 data-info="{{ audio.title }}|{{ audio.author }}|{{audio.thumb}}"
               />
-              <button type="button" class="music_button close">
+              <button type="button" class="music_button close" >
                 <span
                   aria-hidden="true"
                   class="bi bi-three-dots-vertical"
-                  style="color: white"
                 ></span>
               </button>
 
@@ -100,7 +102,7 @@ content %}
       </div>
     </div>
   </div>
-  <div id="menu" style="display: none" class="bg-dark">
+  <div id="menu" class="bg-dark">
     <div>
       <div id="menu_to_add_musics">
         <h5>Adicionar Música de:</h5>
@@ -125,7 +127,6 @@ content %}
           />Playlists</label
         >
         {% endif %}
-      </div>
       <ul id="data_from_url">
         <li>
           <label for="url">URL:</label>
@@ -163,14 +164,18 @@ content %}
           Adicionar
         </button>
       </ul>
+    </div>
       {% if playlist_title != 'Todas as músicas' %}
-      <div id="data_from_database" style="display: none">
+      <div id="data_from_database">
+        <div class=" scrollable">
         {% for audio in user.audios if audio not in songs_list %}
-        <div class="list-group scrollable">
+        <div class="list-group">
           <label class="list-group-item bg-dark">
             <input type="checkbox" value="{{ audio.id }}" /> {{audio.title}}
           </label>
         </div>
+        {% endfor %}
+      </div>
         <button
           type="submit"
           class="btn btn-primary"
@@ -178,22 +183,20 @@ content %}
         >
           Adicionar
         </button>
-        {% endfor %}
       </div>
       {% endif %}
     </div>
   </div>
-  <section id="controls" class="flex-row" style="display: none">
+  <section id="controls" class="flex-row">
     <div
       class="play_prev_next d-flex justify-content-start align-items-center flex-grow-1"
     >
-      <i id="prev-control" class="bi bi-skip-start-fill"></i>
+      <i id="prev-control" class="bi bi-skip-start-fill mr-3"></i>
       <i id="play-control" class="bi bi-play-fill"></i>
-      <i id="next-control" class="bi bi-skip-end-fill"></i>
+      <i id="next-control" class="bi bi-skip-end-fill ml-3"></i>
     </div>
     <div
-      class="duration_music d-flex justify-content-end align-items-center mx-3"
-      style="font-size: 12px"
+      class="duration_music d-flex justify-content-end align-items-center mx-5"      
     >
       <span id="current-duration" class="mr-1">00:00</span>/
       <span id="total-duration" class="ml-1">00:00</span>
@@ -212,7 +215,6 @@ content %}
         max="100"
         step="0.01"
         value="100"
-        style="display: none"
       />
     </div>
     <input
@@ -230,7 +232,22 @@ content %}
 {% endblock %} {% block scripts %}
 
 <script src="../static/js/player.js" type="module"></script>
-
 <script src="../static/js/musics_page.js" type="module"></script>
 
+
+<script type="module">
+  if ('serviceWorker' in navigator) {    
+   // estamos verificando aqui se o navegador suporta a API do service worker 
+window.addEventListener('load', function() { 
+    navigator.serviceWorker.register('../static/js/sw.js').then(function(registration) { 
+      // O registro foi bem-sucedido       
+      console.log('O registro do Service Worker foi bem-sucedido com escopo: ', registration.scope); 
+    }, function(err) { 
+      // falha no registro :( 
+      console. log('Falha no registro do ServiceWorker: ', err); 
+    }); 
+  }); 
+}
+</script>
+  
 {% endblock %}
