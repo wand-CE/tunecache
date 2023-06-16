@@ -1,5 +1,10 @@
 {% extends 'base.html' %} {% block style_of_page %}
 <link rel="stylesheet" href="../static/css/all_songs.css" />
+
+<script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js"></script>
+<script>
+  Howler.autoUnlock = false;
+</script>
 {% endblock %} {% block title %}{{playlist_title}}{% endblock %} {% block
 content %}
 <div class="container-fluid mb-5">
@@ -68,12 +73,12 @@ content %}
               >
                 {{ audio.author }}
               </span>
-              <audio
+              <source
                 id="song{{ audio.id }}"
                 class="songs"
                 src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
                 data-info="{{ audio.title }}|{{ audio.author }}|{{audio.thumb}}"
-              ></audio>
+              />
               <button type="button" class="music_button close">
                 <span
                   aria-hidden="true"
@@ -207,40 +212,25 @@ content %}
         max="100"
         step="0.01"
         value="100"
+        style="display: none"
       />
     </div>
     <input
       id="progressbar"
       type="range"
       min="0"
-      max="0"
-      step="1"
+      max="100"
+      step="0.1"
       class="w-100 d-md-block"
+      value="0"
     />
   </section>
 </div>
-<style>
-  .scrollable {
-    max-height: 150px; /* Define a altura máxima da lista */
-    overflow-y: scroll; /* Adiciona a barra de rolagem vertical */
-  }
 
-  /* Define a aparência da barra de rolagem */
-  .scrollable::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  .scrollable::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-
-  .scrollable::-webkit-scrollbar-thumb {
-    background: #888;
-  }
-</style>
 {% endblock %} {% block scripts %}
 
 <script src="../static/js/player.js" type="module"></script>
+
 <script src="../static/js/musics_page.js" type="module"></script>
+
 {% endblock %}

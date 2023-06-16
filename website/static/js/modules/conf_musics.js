@@ -1,11 +1,12 @@
+/*
 import {
   update_music_list,
   verify_songs,
   onMusicEnd,
   idSongs,
-  songs,
-  play_on_click_li,
 } from "../modules/conf_player.js";
+*/
+import { play_on_click_li } from "../modules/sort_musics.js";
 
 export function deleteAudio(audioId) {
   fetch("/delete-music", {

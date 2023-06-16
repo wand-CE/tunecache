@@ -116,6 +116,9 @@ footer {
   .volume {
     margin-right: 50px;
   }
+  #musica_atual {
+    font-size: large;
+  }
 }
 
 #menu {
@@ -168,21 +171,15 @@ footer {
     font-size: small;
   }
   .musica-atual-container {
-    order: -1;
     top: 5px;
     left: 10px;
     position: absolute;
-    width: 97%;
+    width: 100%;
   }
 
   #musica_atual {
     font-size: 13px;
     width: 100%;
-  }
-
-  .play_prev_next {
-    position: absolute;
-    bottom: 0;
   }
 
   div.volume {
@@ -193,7 +190,10 @@ footer {
   }
 
   .play_prev_next {
+    z-index: 1;
     left: 10px;
+    position: absolute;
+    bottom: 0;
   }
 
   .duration_music {
@@ -226,6 +226,13 @@ footer {
 
   #menu li {
     width: 100%;
+  }
+
+  #musica_atual {
+    font-size: medium;
+  }
+  #controls {
+    display: block;
   }
 }
 
@@ -279,5 +286,23 @@ footer {
 
 .delete_audio:hover {
   background-color: rgb(98, 10, 10);
-  cursor: ;
+}
+
+.scrollable {
+  max-height: 150px; /* Define a altura máxima da lista */
+  overflow-y: scroll; /* Adiciona a barra de rolagem vertical */
+}
+
+/* Define a aparência da barra de rolagem */
+.scrollable::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollable::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.scrollable::-webkit-scrollbar-thumb {
+  background: #888;
 }
