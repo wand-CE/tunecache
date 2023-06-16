@@ -236,18 +236,18 @@ content %}
 
 
 <script type="module">
-  if ('serviceWorker' in navigator) {    
-   // estamos verificando aqui se o navegador suporta a API do service worker 
-window.addEventListener('load', function() { 
-    navigator.serviceWorker.register('../static/js/sw.js').then(function(registration) { 
-      // O registro foi bem-sucedido       
-      console.log('O registro do Service Worker foi bem-sucedido com escopo: ', registration.scope); 
-    }, function(err) { 
-      // falha no registro :( 
-      console. log('Falha no registro do ServiceWorker: ', err); 
-    }); 
-  }); 
-}
+if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register(
+                '/sw.js',
+                {scope: '/'}
+            ).then(function(registration) {
+                console.log('Registered',registration);
+            }).catch(function(error) {
+                console.log('Registration failed:', error);
+            });
+        });
+    }
 </script>
   
 {% endblock %}
