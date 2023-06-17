@@ -236,6 +236,8 @@ content %}
 
 
 <script type="module">
+navigator.storage.estimate().then((estimate)=>{
+alert((estimate.quota/1000000000).toFixed(2))})
 if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register(
