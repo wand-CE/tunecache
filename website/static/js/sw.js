@@ -21,19 +21,8 @@ var urlsToCache = [
   "https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js",
 ];
 
-/*fetch("/listar-musicas")
-  .then((response) => response.json())
-  .then((data) => {
-    // A variável 'data' contém a lista de arquivos
-    console.log(data);
-    // Faça o processamento necessário com a lista de arquivos
-  })
-  .catch((error) => {
-    console.error("Erro ao obter a lista de arquivos:", error);
-  });
-*/
-
 self.addEventListener("install", function (event) {
+  self.skipWaiting();
   // install file needed offline
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {

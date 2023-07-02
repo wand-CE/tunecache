@@ -100,7 +100,6 @@ function initializeHowl(audioSrc) {
 
   tituloAtual.innerHTML =
     document.getElementsByClassName("title_songs")[index].textContent;
-  console.log();
 
   if (!createdHowler) {
     sound = new Howl({
@@ -117,11 +116,13 @@ function initializeHowl(audioSrc) {
         currentTime = setInterval(updateCurrentTime, 10); // Atualiza a cada 10ms
 
         if ("mediaSession" in navigator) {
+          const singers =
+            document.getElementsByClassName("singers_songs")[index].innerText;
           const mediaSession = navigator.mediaSession;
           mediaSession.metadata = new MediaMetadata({
-            title: data[0],
-            author: data[1],
-            artwork: [{ src: data[2], type: "image/jpeg" }],
+            title: tituloAtual.innerText,
+            artist: singers,
+            artwork: [{ src: data[1], type: "image/jpeg" }],
           });
 
           mediaSession.setActionHandler("play", () => {
@@ -175,18 +176,15 @@ volumebar.addEventListener("input", () => {
 });
 
 export function tocar() {
-  console.log(index);
   if (sound) {
     sound.stop();
   }
-  console.log(index);
   if (songs.length > 0) {
     initializeHowl(srcSongs[index]);
     sound.play();
   } else {
     button_playpause.className = "bi bi-play-fill";
   }
-  console.log(index);
 }
 
 function playNextAudio() {
@@ -276,7 +274,7 @@ li_tags_songs.addEventListener("click", (ev) => {
     "bi bi-check-square-fill",
   ];
   if (!denyclass.includes(ev.target.className)) {
-    if (!(ev.target.contentEditable == "true")) {
+    if (!(ev.target.tagName == "INPUT")) {
       var element = ev.target.closest("li");
 
       var srcSound = element.querySelector("source");

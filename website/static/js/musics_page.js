@@ -1,4 +1,4 @@
-import { focusEnd } from "../js/modules/main_conf.js";
+import { focusEnd, doneButton, removeFocus } from "../js/modules/main_conf.js";
 import { update_music_list, tocar, sound, init_player } from "../js/player.js";
 
 var menu = document.getElementById("menu");
@@ -75,24 +75,14 @@ container.addEventListener("click", (event) => {
         `audio_lista${idAudio}`
       )[0];
 
-      const newElement = document.createElement("button");
-      newElement.className = "close check_change text-success";
-      newElement.style.marginLeft = "5px";
-      newElement.style.right = "90px";
-      newElement.style.position = "absolute";
-
-      newElement.innerHTML = `<span aria-hidden="true" class="bi bi-check-square-fill"></span>`;
-
-      buttonParent.insertBefore(newElement, buttonParent.children[4]);
+      buttonParent.insertBefore(doneButton, buttonParent.children[4]);
 
       const oldTitleName = title.innerText;
 
-      newElement.addEventListener("click", () => {
+      doneButton.addEventListener("click", () => {
         editAudio(idAudio, oldTitleName);
-        newElement.remove();
-
-        title.removeAttribute("contentEditable");
-        title.style.backgroundColor = "";
+        doneButton.remove();
+        removeFocus(document.getElementById(`title_song${idAudio}`));
       });
       focusEnd(title);
     });
@@ -172,7 +162,7 @@ export function deleteAudio(audioId) {
 }
 
 export function editAudio(audioId, old_title) {
-  var musicName = document.getElementById(`title_song${audioId}`).innerText;
+  var musicName = document.getElementById(`title_song${audioId}`).value;
 
   if (musicName.trim().length == 0) {
     document.getElementById(`title_song${audioId}`).innerText = old_title;

@@ -42,6 +42,11 @@ def login():
 def logout():
     """Function logout of the site"""
     logout_user()
+    if request.headers.get('Service-Worker-Navigation-Mode') == 'Service-Worker':
+        response = make_response(redirect(url_for('auth.login')))
+        response.headers['Clear-Site-Data'] = '"cache"'
+        return response
+
     return redirect(url_for('auth.login'))
 
 

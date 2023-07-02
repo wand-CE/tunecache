@@ -73,15 +73,25 @@ content %}
                   {{ audio.title }}
                 </span>
                 <br />
-                {{ audio.author }}                
+                <span class="singers_songs">
+                {% for singer in audio.singers %}
+                {{ singer.name }} 
+                {% if audio.singers|length > 1 %}
+                  {% if singer != audio.singers[-1] %}
+                  ,
+                  {% endif %}
+                {% endif %}
+                {% endfor %}
+              </span>
               </span>
               </span>
               <source
                 id="song{{ audio.id }}"
                 class="songs"
                 src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
-                data-info="{{ audio.title }}|{{ audio.author }}|{{audio.thumb}}"
-              />
+                data-info="{{audio.thumb}}"
+              />              
+              
               <button type="button" class="music_button close" >
                 <span
                   aria-hidden="true"
@@ -98,7 +108,7 @@ content %}
             </li>
             {% endfor %}
           </span>
-        </ul>
+        </ul>                
       </div>
     </div>
   </div>

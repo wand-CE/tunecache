@@ -252,7 +252,6 @@ footer {
 
   .title_singer {
     max-width: 130px !important;
-    overflow: hidden;
     font-size: 10px !important;
   }
 
@@ -343,7 +342,8 @@ footer {
 
 .title_singer {
   font-size: small;
-  max-width: 500px;
+  max-width: 200px !important;
+  overflow: hidden;
 }
 
 .title_songs {
@@ -417,4 +417,11 @@ footer {
 
 .duration_music {
   font-size: 12px;
+}
+
+.musica-atual-container {
+  max-width: 80%;
+  max-height: 30px;
+  overflow: hidden;
+  margin-right: 1%;
 }
