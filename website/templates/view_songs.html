@@ -7,6 +7,7 @@
 </script>
 {% endblock %} {% block title %}{{playlist_title}}{% endblock %} {% block
 content %}
+
 <div class="container-fluid mb-5">
   <div class="row mb-5">
     <div class="col mb-5">
@@ -16,13 +17,11 @@ content %}
         data-value="{{ playlist_id }}"
       >
         {{playlist_title}}
-        {% if singer == yes %}
         <i
           id="plus_circle_button"
           title="Adicionar Músicas"
           class="bi bi-plus-circle ml-5"
         ></i>
-        {% endif %}
         <i
           id="shuffle_musics"
           title="ordem aleatória"
@@ -53,10 +52,7 @@ content %}
               class="audio_lista{{ audio.id }} d-flex flex-row list-group-item "
               data-target="audio_lista"
             >
-              <span
-                class="bi bi-list handle"
-              >
-              </span>
+              <span class="bi bi-list handle"> </span>
               <span class="ml-4 mr-3">
                 <img
                   src="{{audio.thumb}}"
@@ -66,33 +62,24 @@ content %}
                 />
               </span>
               <span class="title_singer">
-                <span
-                  id="title_song{{ audio.id }}"
-                  class="title_songs"
-                >
+                <span id="title_song{{ audio.id }}" class="title_songs">
                   {{ audio.title }}
                 </span>
                 <br />
                 <span class="singers_songs">
-                {% for singer in audio.singers %}
-                {{ singer.name }} 
-                {% if audio.singers|length > 1 %}
-                  {% if singer != audio.singers[-1] %}
-                  ,
-                  {% endif %}
-                {% endif %}
-                {% endfor %}
-              </span>
-              </span>
+                  {% for singer in audio.singers %} {{ singer.name }} {% if
+                  audio.singers|length > 1 %} {% if singer != audio.singers[-1]
+                  %} , {% endif %} {% endif %} {% endfor %}
+                </span>
               </span>
               <source
                 id="song{{ audio.id }}"
                 class="songs"
                 src="../static/users/{{ user.id }}/songs/{{ audio.nome_na_pasta }}"
                 data-info="{{audio.thumb}}"
-              />              
-              
-              <button type="button" class="music_button close" >
+              />
+
+              <button type="button" class="music_button close">
                 <span
                   aria-hidden="true"
                   class="bi bi-three-dots-vertical"
@@ -108,15 +95,16 @@ content %}
             </li>
             {% endfor %}
           </span>
-        </ul>                
+        </ul>
       </div>
     </div>
   </div>
   <div id="menu" class="bg-dark">
     <div>
       <div id="menu_to_add_musics">
+        {% if playlist_title != 'Todas as músicas' %} {% if singer_page != 'yes'
+        %}
         <h5>Adicionar Música de:</h5>
-        {% if playlist_title != 'Todas as músicas' %}
 
         <label class="from_url">
           <input
@@ -136,118 +124,134 @@ content %}
             class="ml-5 from_database"
           />Playlists</label
         >
+        {% endif %} {% endif %} {% if singer_page != 'yes' %}
+        <ul id="data_from_url">
+          <li>
+            <label for="url">URL:</label>
+            <input
+              type="text"
+              placeholder="Digite a Url da Música ou Playlist"
+              class="form-control"
+              id="url"
+              name="url"
+            />
+          </li>
+
+          <li>
+            <label for="titulo">Título:</label>
+            <input
+              type="text"
+              placeholder="Digite o Titulo da Música ou Playlist"
+              class="form-control"
+              id="titulo"
+              name="titulo"
+            />
+          </li>
+
+          <li>
+            <label for="autor">Autor:</label>
+            <input
+              type="text"
+              placeholder="Nome do cantor (deixar em branco se for playlist)"
+              class="form-control"
+              id="autor"
+              name="autor"
+            />
+          </li>
+          <button type="submit" id="add_music" class="btn btn-primary">
+            Adicionar
+          </button>
+        </ul>
         {% endif %}
-      <ul id="data_from_url">
-        <li>
-          <label for="url">URL:</label>
-          <input
-            type="text"
-            placeholder="Digite a Url da Música ou Playlist"
-            class="form-control"
-            id="url"
-            name="url"
-          />
-        </li>
-
-        <li>
-          <label for="titulo">Título:</label>
-          <input
-            type="text"
-            placeholder="Digite o Titulo da Música ou Playlist"
-            class="form-control"
-            id="titulo"
-            name="titulo"
-          />
-        </li>
-
-        <li>
-          <label for="autor">Autor:</label>
-          <input
-            type="text"
-            placeholder="Nome do cantor (deixar em branco se for playlist)"
-            class="form-control"
-            id="autor"
-            name="autor"
-          />
-        </li>
-        <button type="submit" id="add_music" class="btn btn-primary">
-          Adicionar
-        </button>
-      </ul>
-    </div>
-      {% if playlist_title != 'Todas as músicas' %}
-      <div id="data_from_database">
-        <div class=" scrollable">
-        {% for audio in user.audios if audio not in songs_list %}
-        <div class="list-group">
-          <label class="list-group-item bg-dark">
-            <input type="checkbox" value="{{ audio.id }}" /> {{audio.title}}
-          </label>
+      </div>
+      {% if playlist_title != 'Todas as músicas' %} {% if singer_page == "yes"
+      %}
+      <div id="data_from_database" style="display: inherit">
+        {% else %}
+        <div id="data_from_database">
+          {% endif %}
+          <div class="scrollable">
+            {% for audio in user.audios if audio not in songs_list %}
+            <div class="list-group">
+              <label class="list-group-item bg-dark">
+                <input type="checkbox" value="{{ audio.id }}" /> {{audio.title}}
+              </label>
+            </div>
+            {% endfor %}
+          </div>
+          {% if singer_page == "yes" %}
+          <button
+            type="submit"
+            class="btn btn-primary"
+            id="add_music_to_singer"
+          >
+            Adicionar
+          </button>
+          {% else %}
+          <button
+            type="submit"
+            class="btn btn-primary"
+            id="add_music_from_database"
+          >
+            Adicionar
+          </button>
+          {% endif %}
         </div>
-        {% endfor %}
+        {% endif %}
       </div>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          id="add_music_from_database"
-        >
-          Adicionar
-        </button>
+    </div>
+    <section id="controls" class="flex-row">
+      <div
+        class="play_prev_next d-flex justify-content-start align-items-center flex-grow-1"
+      >
+        <i id="prev-control" class="bi bi-skip-start-fill mr-3"></i>
+        <i id="play-control" class="bi bi-play-fill"></i>
+        <i id="next-control" class="bi bi-skip-end-fill ml-3"></i>
       </div>
-      {% endif %}
-    </div>
-  </div>
-  <section id="controls" class="flex-row">
-    <div
-      class="play_prev_next d-flex justify-content-start align-items-center flex-grow-1"
-    >
-      <i id="prev-control" class="bi bi-skip-start-fill mr-3"></i>
-      <i id="play-control" class="bi bi-play-fill"></i>
-      <i id="next-control" class="bi bi-skip-end-fill ml-3"></i>
-    </div>
-    <div
-      class="duration_music d-flex justify-content-end align-items-center mx-5"      
-    >
-      <span id="current-duration" class="mr-1">00:00</span>/
-      <span id="total-duration" class="ml-1">00:00</span>
-    </div>
-    <div class="musica-atual-container">
-      <span id="musica_atual"></span>
-    </div>
-    <div
-      class="volume d-flex justify-content-end align-items-center flex-grow-1"
-    >
-      <i id="vol-icon" class="bi bi-volume-up-fill"></i>
+      <div
+        class="duration_music d-flex justify-content-end align-items-center mx-5"
+      >
+        <span id="current-duration" class="mr-1">00:00</span>/
+        <span id="total-duration" class="ml-1">00:00</span>
+      </div>
+      <div class="musica-atual-container">
+        <span id="musica_atual"></span>
+      </div>
+      <div
+        class="volume d-flex justify-content-end align-items-center flex-grow-1"
+      >
+        <i id="vol-icon" class="bi bi-volume-up-fill"></i>
+        <input
+          id="volume"
+          type="range"
+          min="0"
+          max="100"
+          step="0.01"
+          value="100"
+        />
+      </div>
       <input
-        id="volume"
+        id="progressbar"
         type="range"
         min="0"
         max="100"
-        step="0.01"
-        value="100"
+        step="0.1"
+        class="w-100 d-md-block"
+        value="0"
       />
-    </div>
-    <input
-      id="progressbar"
-      type="range"
-      min="0"
-      max="100"
-      step="0.1"
-      class="w-100 d-md-block"
-      value="0"
-    />
-  </section>
-</div>
+    </section>
+  </div>
 
-{% endblock %} {% block scripts %}
+  {% endblock %} {% block scripts %}
 
-<script src="../static/js/player.js" type="module"></script>
-<script src="../static/js/musics_page.js" type="module"></script>
+  <script src="../static/js/player.js" type="module"></script>
+  <script src="../static/js/musics_page.js" type="module"></script>
+  {% if singer_page == 'yes'%}
+  <script src="../static/js/singer_page.js" type="module"></script>
+  {% endif %}
 
-
-<script type="module">
-navigator.storage.estimate().then((estimate)=>{
-alert((estimate.quota/1000000000).toFixed(2))})
+  <script type="module">
+    /*
 if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
             navigator.serviceWorker.register(
@@ -260,6 +264,8 @@ if ('serviceWorker' in navigator) {
             });
         });
     }
-</script>
-  
-{% endblock %}
+*/
+  </script>
+
+  {% endblock %}
+</div>

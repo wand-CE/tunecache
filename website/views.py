@@ -10,7 +10,7 @@ from flask import Blueprint, render_template, request, jsonify, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from pytube import YouTube, Playlist
-from .models import Audio, Personal_playlist, Singer, singer_audios
+from .models import Audio, Personal_playlist, Singer
 from . import db
 
 
@@ -38,7 +38,10 @@ def playlists():
     '''
 
     """function responsible for the playlists collection page of the website"""        
-    return render_template('playlists.html', user=current_user)
+    return render_template('playlists.html',
+                           user=current_user,
+                           page_name='Playlists',
+                           list_playlists=current_user.playlists)
 
 
 @views.route('/playlists/<playlist_title>', methods=['GET', 'POST'])
@@ -60,7 +63,10 @@ def playlists_songs(playlist_title):
 @login_required
 def singers():
     """function responsible for the singers collection page of the website"""
-    return render_template('singers.html', user=current_user)
+    return render_template('playlists.html',
+                           user=current_user,
+                           page_name='Cantores',
+                           list_playlists=current_user.singers)
 
 @views.route('/cantores/<singer_title>', methods=['GET', 'POST'])
 @login_required
@@ -74,7 +80,9 @@ def view_singers(singer_title):
                            user=current_user,
                            playlist_title = singer_title,
                            songs_list=current_singer.audios,
-                           singer = 'yes')
+                           playlist_id = current_singer.id,
+                           singer_page = 'yes',
+                           url='singers_page')
 
 
 @views.route('/delete-music', methods=['DELETE'])
@@ -102,44 +110,34 @@ def delete_audio():
 @login_required
 def add_playlist():
     """function responsible for add the playlists in the website"""
-    playlist_data = json.loads(request.data)
+    playlist_data = json.loads(request.data)    
     if 'url' in playlist_data:
         playlist_youtube = Playlist(playlist_data['url'])
         playlist_title = playlist_youtube.title
     else:
         playlist_title = playlist_data['playlistTitle']
-    playlist = Personal_playlist.query.filter_by(titulo=func.lower(playlist_title)).first()
-    if playlist is None:
-        new_playlist = Personal_playlist(titulo=playlist_title, user_id=current_user.id)
-        db.session.add(new_playlist)
-        db.session.commit()
 
-        return jsonify([new_playlist.id])
+    playlist = Personal_playlist.query.filter_by(titulo=func.lower(playlist_title)).first()
 
     if 'url' in playlist_data:
         urls = playlist_youtube.video_urls
         return jsonify({ "urls" : list(urls)})
 
+    
+    if playlist is None:
+        new_playlist = Personal_playlist(titulo=playlist_title, user_id=current_user.id)
+        db.session.add(new_playlist)
+        db.session.commit()
 
+        return jsonify([new_playlist.titulo, new_playlist.id])
 
     return jsonify({})
-
-
-
-
-
-
-
-
-
-
-
 
 
 @views.route('/add-music', methods=['POST'])
 @login_required
 def add_music():
-    """function responsible for add the audios in the website"""
+    """function responsible for add the audios in the website"""    
     music_request = json.loads(request.data)
     url = music_request['music_url']
     yt = YouTube(url)
@@ -158,9 +156,13 @@ def add_music():
                 filename = f'{(audio.title).replace(" ","_")}.mp3'
 
                 filename = re.sub(r'[^\w\-_.]', '', filename)
-
-                if os.path.exists(f'./website/static/users/{str(current_user.id)}/songs/{filename}'):
-                    filename = f'1{filename}'
+                file_number = 1
+                while True:
+                    if filename in os.listdir(f'./static/users/{str(current_user.id)}/songs/'):
+                        filename = str(str(file_number) + '_' + filename)
+                        file_number += 1
+                    else:
+                        break
 
                 audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/')
                                ,filename=filename)
@@ -178,7 +180,6 @@ def add_music():
                                   video_id=yt.video_id,
                                   title=titulo,
                                   nome_na_pasta=filename,
-                                  author=cantor,
                                   thumb=yt.thumbnail_url)
                 db.session.add(new_audio)
 
@@ -209,8 +210,8 @@ def add_music():
                 return jsonify({
                     "id" : audio.id,
                     "title" : audio.title,
-                    "author" : audio.author,                    
                     "user_id" : audio.user_id,
+                    "singer" : audio.singers,
                     "filename" : audio.nome_na_pasta,                    
                     "thumb": audio.thumb,
                     })
@@ -247,8 +248,7 @@ def edit_list_playlist():
     for audios_id in list_request:
         audio = Audio.query.filter_by(id=int(audios_id)).first()
         current_playlist.audios.append(audio)
-        musicas_adicionadas.append([audio.id, audio.title,
-                                    audio.author, current_user.id,
+        musicas_adicionadas.append([audio.id, audio.title, current_user.id,
                                     audio.nome_na_pasta, audio.thumb])
     db.session.commit()
 
@@ -287,6 +287,7 @@ def page_not_found():
     """function that returns the 404 page error"""    
     return render_template('404.html', user=current_user), 404
 
+
 @views.route('/sw.js', methods=['GET'])
 @login_required
 def sw():
@@ -298,13 +299,35 @@ def sw():
 def user_id():
     return jsonify(str(current_user.id))
 
-@views.route('/listar-musicas')
+
+@views.route('/add_to_singer', methods=['PUT'])
 @login_required
-def listar_musicas():
-    pasta = f'./website/static/users/{current_user.id}/songs'
+def add_to_singer():
+    data_html = json.loads(request.data)
+    singer_id = data_html[1]
+    audio_id = data_html[0]
 
-    # Obtém a lista de arquivos na pasta
-    list_musics = os.listdir(pasta)
-    list_musics.insert(0, str(current_user.id))
+    current_singer = Singer.query.filter_by(id=singer_id).first()
 
-    return jsonify(list_musics)
+    if current_singer:
+        audio = Audio.query.filter_by(id=int(audio_id)).first()
+        current_singer.audios.append(audio)        
+        db.session.commit()
+        list_singers = []
+        for singer in audio.singers:
+            if singer != audio.singers[0]:
+                list_singers.append(' ' + singer.name)
+            else:
+                list_singers.append(singer.name)
+
+        return jsonify({
+                    "id" : audio.id,
+                    "title" : audio.title,                 
+                    "user_id" : audio.user_id,
+                    "singer" : list_singers,
+                    "filename" : audio.nome_na_pasta,                    
+                    "thumb": audio.thumb,
+                    })
+    return jsonify({'erro':'Erro ao adicionar música'})
+
+

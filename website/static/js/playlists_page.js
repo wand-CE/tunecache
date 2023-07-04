@@ -20,7 +20,6 @@ container.addEventListener("click", (event) => {
     const play_title = document.querySelector(`.playlist${id_playlist}`);
 
     editarPlaylist.addEventListener("click", () => {
-      //insertBefore(event.target);
       const three_dots_element = event.target.parentElement.querySelector(
         ".edit_playlist_name"
       );

@@ -1,5 +1,11 @@
 import { focusEnd, doneButton, removeFocus } from "../js/modules/main_conf.js";
-import { update_music_list, tocar, sound, init_player } from "../js/player.js";
+import {
+  update_music_list,
+  tocar,
+  sound,
+  init_player,
+  controls,
+} from "../js/player.js";
 
 var menu = document.getElementById("menu");
 
@@ -50,9 +56,9 @@ if (add_music_from_database) {
   });
 }
 
-const container = document.getElementById("sortable");
+const container_songs = document.getElementById("sortable");
 
-container.addEventListener("click", (event) => {
+container_songs.addEventListener("click", (event) => {
   if (event.target.closest(".music_button")) {
     const elementoPai = event.target.parentElement.parentElement;
     const optionsMenu = elementoPai.querySelector(".music_options");
@@ -99,15 +105,17 @@ container.addEventListener("click", (event) => {
   }
 });
 
-var btn_add_music = document.getElementById("add_music");
+if (!window.location.href.includes("/cantores/")) {
+  var btn_add_music = document.getElementById("add_music");
 
-btn_add_music.addEventListener("click", () => {
-  addData(
-    document.getElementById("url").value,
-    document.getElementById("titulo").value,
-    document.getElementById("autor").value
-  );
-});
+  btn_add_music.addEventListener("click", () => {
+    addData(
+      document.getElementById("url").value,
+      document.getElementById("titulo").value,
+      document.getElementById("autor").value
+    );
+  });
+}
 
 var menu_to_add_musics = document.getElementById("menu_to_add_musics");
 
@@ -153,10 +161,9 @@ export function deleteAudio(audioId) {
 
     update_music_list();
 
-    var quantidade_musicas =
-      document.getElementById("sortable").children.length;
+    var quantidade_musicas = container_songs.children.length;
     if (quantidade_musicas < 1) {
-      document.getElementById("controls").style.display = "none";
+      controls.style.display = "none";
     }
   });
 }
@@ -211,7 +218,6 @@ export function addMusic(url, titulo, cantor, playlist) {
       addMusic_onSortable(
         data["id"],
         data["title"],
-        data["author"],
         data["user_id"],
         data["filename"],
         data["thumb"]
@@ -282,14 +288,11 @@ export function update_playlist_songs_list(list_songs, currentPlaylistId) {
 export function addMusic_onSortable(
   id,
   title,
-  author,
   user_id,
+  singer,
   filename,
   thumb
 ) {
-  // Seleciona o elemento onde o novo elemento será adicionado
-  var music_list = document.getElementById("sortable");
-  // Cria um novo elemento
   const new_song = document.createElement("li");
 
   new_song.classList.add(
@@ -302,10 +305,7 @@ export function addMusic_onSortable(
 
   // Define o conteúdo HTML da div
   new_song.innerHTML = `
-              <span
-                class="bi bi-list handle"
-              >
-              </span>
+              <span class="bi bi-list handle"></span>
               <span class="ml-4 mr-3">
                 <img
                   src="${thumb}"
@@ -315,21 +315,22 @@ export function addMusic_onSortable(
                 />
               </span>
               <span class="title_singer">
-                <span
-                  id="title_song${id}"
-                  class="title_songs"
-                >
-                ${title}
-                </span>
-                <br />
-                ${author}
-              </span>
+                  <span
+                    id="title_song${id}"
+                    class="title_songs"
+                  >
+                  ${title}
+                  </span>
+                  <br />
+                  <span class="singers_songs">
+                  ${singer}
+                  </span>
               </span>
               <source
                 id="song${id}"
                 class="songs"
                 src="../static/users/${user_id}/songs/${filename}"
-                data-info="${title}|${author}|${thumb}"
+                data-info="${thumb}"
               />
               <button type="button" class="music_button close" >
                 <span
@@ -345,8 +346,8 @@ export function addMusic_onSortable(
                   <li class="delete_audio">Excluir</li>
                 </ul>
               </div>`;
-  music_list.appendChild(new_song);
+  container_songs.appendChild(new_song);
   update_music_list();
   init_player();
-  document.getElementById("controls").style.display = "flex";
+  controls.style.display = "flex";
 }

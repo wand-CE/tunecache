@@ -19,7 +19,6 @@ class Audio(db.Model):
     video_id = db.Column(db.String(30))# trocar para audio_id depois
     title = db.Column(db.String(50))
     nome_na_pasta = db.Column(db.String(100))
-    author = db.Column(db.String(50))
     thumb = db.Column(db.String(50))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     playlists = db.relationship('Personal_playlist', backref='audios', secondary=playlist_audios)

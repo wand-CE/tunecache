@@ -11,7 +11,7 @@ const volumebar = document.getElementById("volume");
 const button_playpause = document.getElementById("play-control");
 const vol_icon = document.getElementById("vol-icon");
 
-const controls = document.querySelector("#controls");
+export const controls = document.querySelector("#controls");
 
 var srcSongs;
 
@@ -99,7 +99,7 @@ function initializeHowl(audioSrc) {
   });
 
   tituloAtual.innerHTML =
-    document.getElementsByClassName("title_songs")[index].textContent;
+    document.getElementsByClassName("title_songs")[index].innerText;
 
   if (!createdHowler) {
     sound = new Howl({
@@ -122,7 +122,7 @@ function initializeHowl(audioSrc) {
           mediaSession.metadata = new MediaMetadata({
             title: tituloAtual.innerText,
             artist: singers,
-            artwork: [{ src: data[1], type: "image/jpeg" }],
+            artwork: [{ src: data[0], type: "image/jpeg" }],
           });
 
           mediaSession.setActionHandler("play", () => {

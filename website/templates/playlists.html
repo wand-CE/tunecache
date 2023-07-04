@@ -1,9 +1,10 @@
 {% extends 'base.html' %} {% block style_of_page %}
 <link rel="stylesheet" href="../static/css/playlists.css" />{% endblock %} {%
-block title %}Playlists{% endblock %} {% block content %}
+block title %}{{page_name}}{% endblock %} {% block content %}
 
 <div class="container">
-  <h1 class="mt-5 d-flex">Minhas Playlists</h1>
+  <h1 class="mt-5 d-flex">{{page_name}}</h1>
+  {% if page_name != 'Cantores' %}
   <button class="btn btn-light my-3" id="btn_add_playlist">
     <img
       src="https://cdn-icons-png.flaticon.com/512/565/565264.png"
@@ -11,10 +12,15 @@ block title %}Playlists{% endblock %} {% block content %}
       style="width: 30px"
     />
   </button>
+  {% endif %}
   <div class="row" id="playlist_list">
-    {% for playlist in user.playlists %}
+    {% for playlist in list_playlists %}
     <div class="col-md-3 mb-3">
+      {% if page_name == 'Cantores'%}
+      <a href="/cantores/{{ playlist.name }}" class="text-light">
+      {% else %}
       <a href="/playlists/{{ playlist.titulo }}" class="text-light">
+      {% endif %}
         <div class="card bg-dark">
           {% if playlist.audios|length > 0 %}
           <img src="{{playlist.audios[0].thumb}}" class="card-img-top" />
@@ -31,7 +37,8 @@ block title %}Playlists{% endblock %} {% block content %}
                 text-overflow: ellipsis;
               "
             >
-              {{playlist.titulo}}
+              {% if page_name == 'Cantores'%} {{playlist.name}} {% else %}
+              {{playlist.titulo}} {% endif %}
             </span>
             <a
               class="bi bi-three-dots-vertical float-right edit_playlist_name"
@@ -48,20 +55,22 @@ block title %}Playlists{% endblock %} {% block content %}
         </ul>
       </div>
     </div>
-    {% endfor%}
-    <div id="menu" style="display: none">
-      <label for="new_playlist_title">Nome da Playlist:</label>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Nome da playlist"
-        id="new_playlist_title"
-      />
-      <button class="btn btn-outline-success mt-3 add_playlist">
-        Adicionar
-      </button>
-    </div>
+    {% endfor%}    
   </div>
+  {% if page_name != 'Cantores' %}
+  <div id="menu" style="display: none">
+    <label for="new_playlist_title">Nome da Playlist:</label>
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Nome da playlist"
+      id="new_playlist_title"
+    />
+    <button class="btn btn-outline-success mt-3 add_playlist">
+      Adicionar
+    </button>
+  </div>
+  {% endif %}
 </div>
 <style></style>
 
