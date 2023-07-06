@@ -14,18 +14,18 @@ content %}
       <h4
         align="center"
         class="mt-4 titulo_playlist"
-        data-value="{{ playlist_id }}"
+        data-value="{{playlist_id}}"
       >
         {{playlist_title}}
         <i
           id="plus_circle_button"
           title="Adicionar Músicas"
-          class="bi bi-plus-circle ml-5"
+          class="bi bi-plus-circle mx-4"
         ></i>
         <i
           id="shuffle_musics"
           title="ordem aleatória"
-          class="bi bi-shuffle ml-5"
+          class="bi bi-shuffle"
         ></i>
       </h4>
       <div class="div-musics">
@@ -89,6 +89,15 @@ content %}
               <div class="music_options">
                 <ul>
                   <li class="edit_audio" data-target="{{audio.id}}">Editar</li>
+                  {% if playlist_title != 'Todas as músicas' %}
+                  <li
+                    class="remove_from_playlist bg-info"
+                    data-audio_id="{{audio.id}}"
+                    data-playlist_id="{{playlist_id}}"
+                  >
+                    Remover de Playlist/Cantor
+                  </li>
+                  {% endif %}
                   <li class="delete_audio">Excluir</li>
                 </ul>
               </div>
@@ -248,6 +257,8 @@ content %}
   <script src="../static/js/musics_page.js" type="module"></script>
   {% if singer_page == 'yes'%}
   <script src="../static/js/singer_page.js" type="module"></script>
+  {% elif playlist_page == 'yes' %}
+  <script src="../static/js/playlist_play_page.js" type="module"></script>
   {% endif %}
 
   <script type="module">

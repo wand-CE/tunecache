@@ -29,7 +29,6 @@ class Personal_playlist(db.Model):
     """Model of table for the playlists"""
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(150))
-    url_capa = db.Column(db.String(150))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 

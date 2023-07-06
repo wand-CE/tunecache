@@ -4,6 +4,7 @@ import { isMobileDevice } from "./modules/main_conf.js";
 const songs = document.getElementsByClassName("songs");
 
 const shuffle_button = document.getElementById("shuffle_musics");
+export var isPlaying = false;
 
 shuffle_button.addEventListener("click", shuffle_musics);
 
@@ -148,6 +149,7 @@ function initializeHowl(audioSrc) {
         Array.from(elementWave.children).forEach((item) => {
           item.classList.add("paused");
         });
+        isPlaying = true;
       },
       onpause: function () {
         clearInterval(currentTime);
@@ -155,6 +157,7 @@ function initializeHowl(audioSrc) {
         Array.from(elementWave.children).forEach((item) => {
           item.classList.remove("paused");
         });
+        isPlaying = false;
       },
       onload: function () {
         textTotalDuration.innerText = secondsToMinutes(sound.duration());
@@ -267,13 +270,14 @@ if (songs.length > 0) {
 let li_tags_songs = document.querySelector("#sortable");
 
 li_tags_songs.addEventListener("click", (ev) => {
-  var denyclass = [
+  var denyClass = [
     "bi bi-three-dots-vertical",
     "edit_audio",
     "delete_audio",
     "bi bi-check-square-fill",
+    "remove_from_playlist bg-info",
   ];
-  if (!denyclass.includes(ev.target.className)) {
+  if (!denyClass.includes(ev.target.className)) {
     if (!(ev.target.tagName == "INPUT")) {
       var element = ev.target.closest("li");
 

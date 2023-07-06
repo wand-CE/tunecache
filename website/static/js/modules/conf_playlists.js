@@ -1,5 +1,3 @@
-const playlist_list = document.getElementById("playlist_list");
-
 export function addPlaylist(playlistTitle) {
   fetch("/add-playlist", {
     method: "POST",
@@ -40,6 +38,7 @@ export function deletePlaylist(id) {
 }
 
 function addOnCol(title, id) {
+  const playlist_list = document.getElementById("playlist_list");
   const new_playlist = document.createElement("div");
   new_playlist.classList.add("col-md-3", "mb-3");
 
@@ -49,8 +48,8 @@ function addOnCol(title, id) {
       <img src="https://via.placeholder.com/350x350" class="card-img-top" />          
       <h5 class="card-title my-2">
         <span
-          class="pl-1
-          playlist${id}"
+          id="playlist${id}"
+          class="pl-1"
           style="
             display: inline-block;
             max-width: 90%;

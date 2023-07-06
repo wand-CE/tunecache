@@ -57,7 +57,8 @@ def playlists_songs(playlist_title):
                            user=current_user,
                            playlist_title = playlist_title,
                            playlist_id = current_playlist.id,
-                           songs_list=current_playlist.audios)
+                           songs_list=current_playlist.audios,
+                           playlist_page='yes')
 
 @views.route('/cantores', methods=['GET', 'POST'])
 @login_required
@@ -151,7 +152,7 @@ def add_music():
                 tamanho_em_bytes = audio.filesize_approx
 
                 if (tamanho_em_bytes/ 1000000) > 10:
-                    return jsonify({}), 413
+                    return jsonify({'Arquivo de Aúdio grande demais'}), 413
 
                 filename = f'{(audio.title).replace(" ","_")}.mp3'
 
@@ -217,9 +218,9 @@ def add_music():
                     })
             except:
                 atempt += 1
-                if atempt == 200:
+                if atempt == 50:
                     try_again = False
-                    return jsonify({}), 500
+                    return jsonify({'error':'Erro interno no Servidor'}), 500
 
     return jsonify({'added_before': 'YES'})
 
@@ -331,3 +332,78 @@ def add_to_singer():
     return jsonify({'erro':'Erro ao adicionar música'})
 
 
+@views.route('/add-singer', methods=['POST'])
+@login_required
+def add_singer():
+    """function responsible for add the singer in the website"""
+    singer_data = json.loads(request.data)
+    singer_title = singer_data['singerName']
+
+    singer = Singer.query.filter_by(name=func.lower(singer_title)).first()
+
+
+    if singer is None:
+        new_singer = Singer(name=singer_title, user_id=current_user.id)
+        db.session.add(new_singer)
+        db.session.commit()
+
+        return jsonify([new_singer.name, new_singer.id])
+
+    return jsonify({})
+
+
+@views.route("/edit-singer-name", methods=['PUT'])
+@login_required
+def edit_singer_name():
+    singer_data = json.loads(request.data)
+    singer_id = int(singer_data[0])
+
+    singer = db.session.query(Singer).filter_by(id=singer_id).first()
+    singer.name = singer_data[1]
+
+    db.session.commit()
+
+    return jsonify('Nome do cantor editado')
+
+
+@views.route('/delete-singer', methods=['DELETE'])
+@login_required
+def delete_singer():
+    singer_id = int(json.loads(request.data))
+
+    singer = Singer.query.get(singer_id)
+
+    db.session.delete(singer)
+    db.session.commit()
+
+    return jsonify(['Cantor Excluído'])
+
+
+@views.route('/remove-from-playlist-singer', methods=['PUT'])
+@login_required
+def remove_from_playlistSinger():
+    data_from_html = json.loads(request.data)
+
+    page_name = data_from_html[0]
+    id_playlist_singer = int(data_from_html[1])
+    id_music = int(data_from_html[2])
+
+    if page_name == 'singer':
+        singer = Singer.query.get(id_playlist_singer)
+        audio = Audio.query.get(id_music)
+
+        if singer:
+            if audio in singer.audios:
+                singer.audios.remove(audio)
+                db.session.commit()
+
+    elif page_name == 'playlist':
+        playlist = Personal_playlist.query.get(id_playlist_singer)
+        audio = Audio.query.get(id_music)
+
+        if playlist:
+            if playlist in audio.playlists:
+                audio.playlists.remove(playlist)
+                db.session.commit()
+
+    return jsonify({})

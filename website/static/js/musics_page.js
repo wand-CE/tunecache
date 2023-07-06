@@ -5,9 +5,11 @@ import {
   sound,
   init_player,
   controls,
+  isPlaying,
 } from "../js/player.js";
 
 var menu = document.getElementById("menu");
+var page_id = document.querySelector(".titulo_playlist").dataset.value;
 
 menu.querySelectorAll("*").forEach((elemento) => {
   elemento.addEventListener("click", (event) => {
@@ -150,7 +152,9 @@ export function deleteAudio(audioId) {
     for (let i = 0; i < howl.length; i++) {
       if (howl[i]._src == src) {
         if (howl[i] == sound) {
-          tocar();
+          if (isPlaying) {
+            tocar();
+          }
         }
         howl[i].unload();
         break;
@@ -200,12 +204,12 @@ export function addMusic(url, titulo, cantor, playlist) {
     }),
   })
     .then((response) => {
-      if (!response.ok) {
-        throw new Error("Erro de Url");
-      }
       return response.json();
     })
     .then((data) => {
+      if ("error" in data) {
+        throw new Error("Erro Interno ou na Url fornecida");
+      }
       if ("added_before" in data) {
         if (data["added_before"] == "YES") {
           if (playlist == "NO") {
@@ -342,11 +346,23 @@ export function addMusic_onSortable(
 
               <div class="music_options">
                 <ul>
-                  <li class="edit_audio" data-target="${id}">Editar</li>
+                  <li class="edit_audio" data-target="${id}">Editar</li>                  
                   <li class="delete_audio">Excluir</li>
                 </ul>
               </div>`;
   container_songs.appendChild(new_song);
+  if (window.location.pathname != "/") {
+    var option = new_song.querySelector(".music_options");
+    var rename_playlist = document.createElement("li");
+    rename_playlist.className = "remove_from_playlist bg-info";
+    rename_playlist.dataset.audio_id = `${id}`;
+    rename_playlist.dataset.playlist_id = `${page_id}`;
+    rename_playlist.innerText = "Remover de Playlist/Cantor";
+
+    option
+      .querySelector("ul")
+      .insertBefore(rename_playlist, option.querySelector(".delete_audio"));
+  }
   update_music_list();
   init_player();
   controls.style.display = "flex";

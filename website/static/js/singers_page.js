@@ -1,8 +1,4 @@
-import {
-  addPlaylist,
-  editPlaylist,
-  deletePlaylist,
-} from "./modules/conf_playlists.js";
+import { addSinger, editSinger, deleteSinger } from "./modules/conf_singers.js";
 
 import { focusEnd, doneButton, removeFocus } from "./modules/main_conf.js";
 
@@ -29,7 +25,7 @@ container.addEventListener("click", (event) => {
       }
 
       excluirPlaylist.addEventListener("click", () => {
-        deletePlaylist(event.target.dataset.value);
+        deleteSinger(event.target.dataset.value);
         title.closest(".col-md-3").remove();
       });
 
@@ -62,14 +58,14 @@ const editarPlaylistClickHandler = (event) => {
 
 const confirmEditarPlaylistClickHandler = () => {
   var new_title = document.getElementById(`playlist${id_playlist}`);
-  editPlaylist(id_playlist, new_title.value);
+  editSinger(id_playlist, new_title.value);
   document
     .querySelector(`#playlist${id_playlist}`)
     .closest(".col-md-3")
     .querySelectorAll("a")
     .forEach((item) => {
       if (!item.classList.contains("edit_playlist_name"))
-        item.href = `/playlists/${new_title.value}`;
+        item.href = `/cantores/${new_title.value}`;
     });
 
   removeFocus(document.getElementById(`playlist${id_playlist}`));
@@ -97,7 +93,7 @@ window.addEventListener("click", (ev) => {
 
 document.querySelector(".add_playlist").addEventListener("click", () => {
   if (!(playlist_title.value.trim() === "")) {
-    addPlaylist(playlist_title.value.trim());
+    addSinger(playlist_title.value.trim());
     playlist_title.value = "";
   } else {
     alert("Nome inválido");

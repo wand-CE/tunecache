@@ -8,27 +8,12 @@ export function focusEnd(element) {
   new_element.classList.add("bg-dark", "text-light");
   new_element.value = element.innerText;
   element.remove();
-
-  new_element.addEventListener("touchstart", function (e) {
-    e.stopPropagation();
-    new_element.setSelectionRange(
-      new_element.value.length,
-      new_element.value.length
-    );
-  });
-
   new_element.focus();
-  new_element.setSelectionRange(
-    new_element.value.length,
-    new_element.value.length
-  );
 }
 
 export function removeFocus(element) {
   old_element.innerText = element.value;
-  element.focus();
   element.before(old_element);
-  element.setSelectionRange(0, 0);
   old_element.removeAttribute("style");
   element.remove();
 }
