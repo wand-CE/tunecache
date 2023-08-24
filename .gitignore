@@ -1,0 +1,4 @@
+instance
+website/__pycache__
+website/static/users/*
+!website/static/users/.gitkeep

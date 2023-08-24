@@ -223,6 +223,7 @@ export function addMusic(url, titulo, cantor, playlist) {
         data["id"],
         data["title"],
         data["user_id"],
+        data["singer"],
         data["filename"],
         data["thumb"]
       );

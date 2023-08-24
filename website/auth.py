@@ -3,6 +3,7 @@ Wanderson Soares dos Santos - UTF-8 - 11-04-2023
 Configs for the auth system of my site
 """
 import os
+import shutil
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import (login_user, login_required,
@@ -80,6 +81,8 @@ def sign_up():
             db.session.commit()
 
             songs_path = f'./website/static/users/{str(new_user.id)}'
+            if str(new_user.id) in os.listdir('./website/static/users/'):
+                shutil.rmtree(songs_path)
             os.makedirs(songs_path)
 
             path = os.path.join(songs_path, 'songs')

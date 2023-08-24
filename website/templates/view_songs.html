@@ -261,22 +261,16 @@ content %}
   <script src="../static/js/playlist_play_page.js" type="module"></script>
   {% endif %}
 
-  <script type="module">
-    /*
-if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register(
-                '/sw.js',
-                {scope: '/'}
-            ).then(function(registration) {
-                console.log('Registered',registration);
-            }).catch(function(error) {
-                console.log('Registration failed:', error);
-            });
-        });
+  <!--<script type="module">
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker
+          .register("/sw.js", { scope: "/" })
+          .then(function (registration) {})
+          .catch(function (error) {});
+      });
     }
-*/
   </script>
-
+  -->
   {% endblock %}
 </div>

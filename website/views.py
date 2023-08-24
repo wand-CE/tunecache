@@ -157,17 +157,17 @@ def add_music():
                 filename = f'{(audio.title).replace(" ","_")}.mp3'
 
                 filename = re.sub(r'[^\w\-_.]', '', filename)
+                
                 file_number = 1
                 while True:
-                    if filename in os.listdir(f'./static/users/{str(current_user.id)}/songs/'):
+                    if filename in os.listdir(f'./website/static/users/{str(current_user.id)}/songs/'):
                         filename = str(str(file_number) + '_' + filename)
                         file_number += 1
                     else:
                         break
-
                 audio.download(output_path=(f'./website/static/users/{str(current_user.id)}/songs/')
                                ,filename=filename)
-
+                
                 titulo = music_request['titulo']
 
                 cantor = music_request['cantor']
@@ -182,6 +182,7 @@ def add_music():
                                   title=titulo,
                                   nome_na_pasta=filename,
                                   thumb=yt.thumbnail_url)
+                
                 db.session.add(new_audio)
 
 
@@ -206,15 +207,17 @@ def add_music():
 
                 db.session.commit()
 
-                audio = current_user.audios[-1]
+                print('ESTOU NO FINAL')
+
+                print(new_audio.singers)
 
                 return jsonify({
-                    "id" : audio.id,
-                    "title" : audio.title,
-                    "user_id" : audio.user_id,
-                    "singer" : audio.singers,
-                    "filename" : audio.nome_na_pasta,                    
-                    "thumb": audio.thumb,
+                    "id" : new_audio.id,
+                    "title" : new_audio.title,
+                    "user_id" : new_audio.user_id,
+                    "singer" : [s.name for s in new_audio.singers],
+                    "filename" : new_audio.nome_na_pasta,                    
+                    "thumb": new_audio.thumb,
                     })
             except:
                 atempt += 1
@@ -250,6 +253,7 @@ def edit_list_playlist():
         audio = Audio.query.filter_by(id=int(audios_id)).first()
         current_playlist.audios.append(audio)
         musicas_adicionadas.append([audio.id, audio.title, current_user.id,
+                                    [s.name for s in audio.singers],
                                     audio.nome_na_pasta, audio.thumb])
     db.session.commit()
 
