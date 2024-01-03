@@ -207,8 +207,8 @@ export function addMusic(url, titulo, cantor, playlist) {
       return response.json();
     })
     .then((data) => {
-      if ("error" in data) {
-        throw new Error("Erro Interno ou na Url fornecida");
+      if (data.error) {
+        throw new Error(data.error);
       }
       if ("added_before" in data) {
         if (data["added_before"] == "YES") {

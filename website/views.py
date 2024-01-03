@@ -220,7 +220,7 @@ def add_music():
                 atempt += 1
                 if atempt == 50:
                     try_again = False
-                    return jsonify({'error': 'Erro interno no Servidor'}), 500
+                    return jsonify({'error': e}), 500
 
     return jsonify({'added_before': 'YES'})
 
