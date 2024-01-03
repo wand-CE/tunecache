@@ -261,16 +261,15 @@ content %}
   <script src="../static/js/playlist_play_page.js" type="module"></script>
   {% endif %}
 
-  <!--<script type="module">
+  <script type="module">
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
+      window.addEventListener("load", () => {
         navigator.serviceWorker
           .register("/sw.js", { scope: "/" })
-          .then(function (registration) {})
-          .catch(function (error) {});
+          .then((registration) => {})
+          .catch((error) => {});
       });
     }
   </script>
-  -->
   {% endblock %}
 </div>

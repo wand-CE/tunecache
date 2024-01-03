@@ -29,8 +29,10 @@ container.addEventListener("click", (event) => {
       }
 
       excluirPlaylist.addEventListener("click", () => {
-        deletePlaylist(event.target.dataset.value);
-        title.closest(".col-md-3").remove();
+        if (confirm("Você tem certeza em excluir essa playlist?")) {
+          deletePlaylist(event.target.dataset.value);
+          title.closest(".col-md-3").remove();
+        }
       });
 
       optionsMenu.style.display =

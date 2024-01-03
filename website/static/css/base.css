@@ -35,10 +35,5 @@ main {
 footer {
   position: absolute;
   width: 100%;
-  min-height: 250px;
   bottom: 0;
-}
-
-.rodape {
-  margin-top: 100px;
 }

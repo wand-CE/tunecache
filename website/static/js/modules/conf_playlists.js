@@ -29,12 +29,8 @@ export function deletePlaylist(id) {
     method: "DELETE",
     body: JSON.stringify(id),
   })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      alert(data[0]);
-    });
+    .then((response) => response.json())
+    .then((data) => alert(data[0]));
 }
 
 function addOnCol(title, id) {

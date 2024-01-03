@@ -28,7 +28,8 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user:
             if check_password_hash(user.password, password):
-                flash(f'Seja bem-vindo(a) {user.first_name}', category='success')
+                flash(
+                    f'Seja bem-vindo(a) {user.first_name}', category='success')
                 login_user(user, remember=True)
                 return redirect(url_for('views.all_songs'))
             else:
@@ -43,10 +44,6 @@ def login():
 def logout():
     """Function logout of the site"""
     logout_user()
-    if request.headers.get('Service-Worker-Navigation-Mode') == 'Service-Worker':
-        response = make_response(redirect(url_for('auth.login')))
-        response.headers['Clear-Site-Data'] = '"cache"'
-        return response
 
     return redirect(url_for('auth.login'))
 

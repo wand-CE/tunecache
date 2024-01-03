@@ -25,8 +25,10 @@ container.addEventListener("click", (event) => {
       }
 
       excluirPlaylist.addEventListener("click", () => {
-        deleteSinger(event.target.dataset.value);
-        title.closest(".col-md-3").remove();
+        if (confirm("Tem certeza que deseja excluir esse cantor?")) {
+          deleteSinger(event.target.dataset.value);
+          title.closest(".col-md-3").remove();
+        }
       });
 
       optionsMenu.style.display =

@@ -103,6 +103,8 @@ window.addEventListener("click", (event) => {
     const id_audio = event.target.dataset.audio_id;
     const singer_id = event.target.dataset.playlist_id;
 
-    removeFromSinger("singer", singer_id, id_audio);
+    if (confirm("Você tem certeza em remover essa música da playlist?")) {
+      removeFromSinger("singer", singer_id, id_audio);
+    }
   }
 });

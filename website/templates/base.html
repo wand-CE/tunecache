@@ -56,7 +56,7 @@
                 <a class="nav-link" href="/cantores">Cantores</a>
               </li>
               <li class="nav-item sair">
-                <a class="nav-link" href="/logout">Sair</a>
+                <a class="nav-link logout-link" href="/logout">Sair</a>
               </li>
             </ul>
           </div>
@@ -84,18 +84,30 @@
       <main class="container">{% block content %} {% endblock %}</main>
 
       <footer class="bg-dark text-white">
-        <div class="container rodape">
-          <table class="">
-            <tr class="bg-dark">
+        <div class="container rodape pt-4">
+          <table>
+            <tr>
+              <h6>© Desenvolvido por Wanderson</h6>
+            </tr>
+            <tr>
               <h2>Me contate:</h2>
-            </tr>
-            <tr class="">
-              de novo
-            </tr>
-            <tr class="">
-              <h2>Desenvolvido por:</h2>
-              <br />
-              Wanderson Soares dos Santos
+              <div style="font-size: 3rem">
+                <a
+                  href="https://github.com/wand-CE"
+                  target="_blank"
+                  class="bi bi-github text-white"
+                ></a>
+                <a
+                  href="https://www.linkedin.com/in/wanderson-soares-235ba819a/"
+                  target="_blank"
+                  class="bi bi-linkedin"
+                ></a>
+                <a
+                  href="https://api.whatsapp.com/send?l=pt&amp;phone=69993908500"
+                  target="_blank"
+                  class="bi bi-whatsapp text-success"
+                ></a>
+              </div>
             </tr>
           </table>
         </div>
@@ -121,6 +133,16 @@
         window.history.replaceState(null, null, window.location.href);
       }
     </script>
-    {% block scripts %} {% endblock %}
+    {% if user.is_authenticated %}
+    <script>
+      const logout = document.querySelector(".logout-link");
+
+      logout.addEventListener("click", (event) => {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          registrations.forEach((registration) => registration.unregister());
+        });
+      });
+    </script>
+    {% endif %} {% block scripts %} {% endblock %}
   </body>
 </html>

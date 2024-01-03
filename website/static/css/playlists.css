@@ -39,3 +39,7 @@
   width: 100%;
   color: white;
 }
+
+.list_playlists {
+  padding-bottom: 12rem !important;
+}
