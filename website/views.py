@@ -143,84 +143,77 @@ def add_music():
     yt = YouTube(url)
     music = Audio.query.filter_by(
         video_id=yt.video_id, user_id=current_user.id).first()
-    if music is None:
-        try_again = True
-        atempt = 0
-        while try_again:
-            try:
-                audio = yt.streams.get_by_itag(140)
-                tamanho_em_bytes = audio.filesize_approx
+    if not music:
+        try:
+            audio = yt.streams.get_by_itag(140)
+            tamanho_em_bytes = audio.filesize_approx
+            if (tamanho_em_bytes / 1000000) > 10:
+                return jsonify({'Arquivo de Aúdio grande demais'}), 413
 
-                if (tamanho_em_bytes / 1000000) > 10:
-                    return jsonify({'Arquivo de Aúdio grande demais'}), 413
+            filename = f'{(audio.title).replace(" ","_")}.mp3'
 
-                filename = f'{(audio.title).replace(" ","_")}.mp3'
+            filename = re.sub(r'[^\w\-_.]', '', filename)
 
-                filename = re.sub(r'[^\w\-_.]', '', filename)
+            file_number = 1
+            while True:
+                if filename in os.listdir(f'./website/static/users/{current_user.id}/songs/'):
+                    filename = str(str(file_number) + '_' + filename)
+                    file_number += 1
+                else:
+                    break
+            audio.download(output_path=(
+                f'./website/static/users/{str(current_user.id)}/songs/'), filename=filename)
 
-                file_number = 1
-                while True:
-                    if filename in os.listdir(f'./website/static/users/{current_user.id}/songs/'):
-                        filename = str(str(file_number) + '_' + filename)
-                        file_number += 1
-                    else:
-                        break
-                audio.download(output_path=(
-                    f'./website/static/users/{str(current_user.id)}/songs/'), filename=filename)
+            titulo = music_request['titulo']
 
-                titulo = music_request['titulo']
+            cantor = music_request['cantor']
 
-                cantor = music_request['cantor']
+            if len(titulo.strip()) == 0:
+                titulo = audio.title
+            if len(cantor.strip()) == 0:
+                cantor = yt.author
 
-                if len(titulo.strip()) == 0:
-                    titulo = audio.title
-                if len(cantor.strip()) == 0:
-                    cantor = yt.author
+            new_audio = Audio(user_id=current_user.id,
+                              video_id=yt.video_id,
+                              title=titulo,
+                              nome_na_pasta=filename,
+                              thumb=yt.thumbnail_url)
 
-                new_audio = Audio(user_id=current_user.id,
-                                  video_id=yt.video_id,
-                                  title=titulo,
-                                  nome_na_pasta=filename,
-                                  thumb=yt.thumbnail_url)
+            db.session.add(new_audio)
 
-                db.session.add(new_audio)
+            cantor = cantor.replace('&', ',').split(',')
 
-                cantor = cantor.replace('&', ',').split(',')
+            for i in cantor:
+                i = i.strip()
+                if bool(i):
+                    current_singer = Singer.query.filter_by(name=i).first()
+                    if current_singer is None:
+                        current_singer = Singer(user_id=current_user.id,
+                                                name=i)
+                        db.session.add(current_singer)
+                    current_singer.audios.append(new_audio)
 
-                for i in cantor:
-                    i = i.strip()
-                    if bool(i):
-                        current_singer = Singer.query.filter_by(name=i).first()
-                        if current_singer is None:
-                            current_singer = Singer(user_id=current_user.id,
-                                                    name=i)
-                            db.session.add(current_singer)
-                        current_singer.audios.append(new_audio)
+            if music_request['playlist'] == 'YES':
+                current_playlist = Personal_playlist.query.order_by(
+                    Personal_playlist.id.desc()).first()
+                current_playlist.audios.append(new_audio)
+            elif music_request['playlist'] != 'NO':
+                current_playlist = Personal_playlist.query.filter_by(
+                    titulo=music_request['playlist']).first()
+                current_playlist.audios.append(new_audio)
 
-                if music_request['playlist'] == 'YES':
-                    current_playlist = Personal_playlist.query.order_by(
-                        Personal_playlist.id.desc()).first()
-                    current_playlist.audios.append(new_audio)
-                elif music_request['playlist'] != 'NO':
-                    current_playlist = Personal_playlist.query.filter_by(
-                        titulo=music_request['playlist']).first()
-                    current_playlist.audios.append(new_audio)
+            db.session.commit()
 
-                db.session.commit()
-
-                return jsonify({
-                    "id": new_audio.id,
-                    "title": new_audio.title,
-                    "user_id": new_audio.user_id,
-                    "singer": [s.name for s in new_audio.singers],
-                    "filename": new_audio.nome_na_pasta,
-                    "thumb": new_audio.thumb,
-                })
-            except Exception as e:
-                atempt += 1
-                if atempt == 50:
-                    try_again = False
-                    return jsonify({'error': e}), 500
+            return jsonify({
+                "id": new_audio.id,
+                "title": new_audio.title,
+                "user_id": new_audio.user_id,
+                "singer": [s.name for s in new_audio.singers],
+                "filename": new_audio.nome_na_pasta,
+                "thumb": new_audio.thumb,
+            })
+        except Exception as e:
+            return jsonify({'error': str(e)})
 
     return jsonify({'added_before': 'YES'})
 
