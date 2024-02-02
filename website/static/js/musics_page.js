@@ -137,39 +137,41 @@ menu_to_add_musics.querySelectorAll("*").forEach((element) => {
 });
 
 export function deleteAudio(audioId) {
-  fetch("/delete-music", {
-    method: "DELETE",
-    body: JSON.stringify({ audioId: audioId }),
-  }).then((_res) => {
-    const element_li = document.getElementsByClassName(
-      `audio_lista${audioId}`
-    )[0];
+  if (confirm("Deseja mesmo excluir essa música?")) {
+    fetch("/delete-music", {
+      method: "DELETE",
+      body: JSON.stringify({ audioId: audioId }),
+    }).then((_res) => {
+      const element_li = document.getElementsByClassName(
+        `audio_lista${audioId}`
+      )[0];
 
-    const src = document.getElementById(`song${audioId}`).src;
+      const src = document.getElementById(`song${audioId}`).src;
 
-    let howl = Howler._howls;
+      let howl = Howler._howls;
 
-    for (let i = 0; i < howl.length; i++) {
-      if (howl[i]._src == src) {
-        if (howl[i] == sound) {
-          if (isPlaying) {
-            tocar();
+      for (let i = 0; i < howl.length; i++) {
+        if (howl[i]._src == src) {
+          if (howl[i] == sound) {
+            if (isPlaying) {
+              tocar();
+            }
           }
+          howl[i].unload();
+          break;
         }
-        howl[i].unload();
-        break;
       }
-    }
 
-    element_li.remove();
+      element_li.remove();
 
-    update_music_list();
+      update_music_list();
 
-    var quantidade_musicas = container_songs.children.length;
-    if (quantidade_musicas < 1) {
-      controls.style.display = "none";
-    }
-  });
+      var quantidade_musicas = container_songs.children.length;
+      if (quantidade_musicas < 1) {
+        controls.style.display = "none";
+      }
+    });
+  }
 }
 
 export function editAudio(audioId, old_title) {
