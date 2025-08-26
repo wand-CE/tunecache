@@ -9,10 +9,9 @@ import re
 from flask import Blueprint, render_template, request, jsonify, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from pytube import YouTube, Playlist
+from pytubefix import YouTube, Playlist
 from .models import Audio, Personal_playlist, Singer
 from . import db
-
 
 views = Blueprint('views', __name__)
 
@@ -150,7 +149,7 @@ def add_music():
             if (tamanho_em_bytes / 1000000) > 10:
                 return jsonify({'Arquivo de Aúdio grande demais'}), 413
 
-            filename = f'{(audio.title).replace(" ","_")}.mp3'
+            filename = f'{(audio.title).replace(" ", "_")}.mp3'
 
             filename = re.sub(r'[^\w\-_.]', '', filename)
 
@@ -213,7 +212,7 @@ def add_music():
                 "thumb": new_audio.thumb,
             })
         except Exception as e:
-            return jsonify({'error': str(e)})
+            return jsonify({'erro': 'Erro ao adicionar música'})
 
     return jsonify({'added_before': 'YES'})
 
