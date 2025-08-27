@@ -110,7 +110,7 @@ def add_playlist():
     """function responsible for add the playlists in the website"""
     playlist_data = json.loads(request.data)
     if 'url' in playlist_data:
-        playlist_youtube = Playlist(playlist_data['url'])
+        playlist_youtube = Playlist(playlist_data['url'], 'WEB')
         playlist_title = playlist_youtube.title
     else:
         playlist_title = playlist_data['playlistTitle']
@@ -139,7 +139,7 @@ def add_music():
     """function responsible for add the audios in the website"""
     music_request = json.loads(request.data)
     url = music_request['music_url']
-    yt = YouTube(url)
+    yt = YouTube(url, 'WEB')
     music = Audio.query.filter_by(
         video_id=yt.video_id, user_id=current_user.id).first()
     if not music:
