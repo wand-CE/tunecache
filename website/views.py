@@ -212,7 +212,7 @@ def add_music():
                 "thumb": new_audio.thumb,
             })
         except Exception as e:
-            return jsonify({'erro': 'Erro ao adicionar música'})
+            return jsonify({'error': f'Erro ao adicionar música: {e}'}), 500
 
     return jsonify({'added_before': 'YES'})
 
@@ -324,7 +324,7 @@ def add_to_singer():
             "filename": audio.nome_na_pasta,
             "thumb": audio.thumb,
         })
-    return jsonify({'erro': 'Erro ao adicionar música'})
+    return jsonify({'error': 'Erro ao adicionar música'}), 500
 
 
 @views.route('/add-singer', methods=['POST'])
