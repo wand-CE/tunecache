@@ -111,20 +111,15 @@ def add_playlist():
     playlist_data = json.loads(request.data)
     if 'url' in playlist_data:
         playlist_youtube = Playlist(playlist_data['url'], 'WEB')
-        playlist_title = playlist_youtube.title
+        urls = playlist_youtube.video_urls
+        return jsonify({"urls": list(urls)})
     else:
         playlist_title = playlist_data['playlistTitle']
 
-    playlist = Personal_playlist.query.filter_by(
-        titulo=func.lower(playlist_title)).first()
-
-    if 'url' in playlist_data:
-        urls = playlist_youtube.video_urls
-        return jsonify({"urls": list(urls)})
+    playlist = Personal_playlist.query.filter_by(titulo=func.lower(playlist_title)).first()
 
     if playlist is None:
-        new_playlist = Personal_playlist(
-            titulo=playlist_title, user_id=current_user.id)
+        new_playlist = Personal_playlist(titulo=playlist_title, user_id=current_user.id)
         db.session.add(new_playlist)
         db.session.commit()
 
@@ -139,7 +134,7 @@ def add_music():
     """function responsible for add the audios in the website"""
     music_request = json.loads(request.data)
     url = music_request['music_url']
-    yt = YouTube(url, 'WEB')
+    yt = YouTube(url)
     music = Audio.query.filter_by(
         video_id=yt.video_id, user_id=current_user.id).first()
     if not music:
